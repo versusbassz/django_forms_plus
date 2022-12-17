@@ -32,7 +32,7 @@ class Helper(object):
         self.global_error_messages = meta.global_error_messages if hasattr(meta, 'global_error_messages') else {}  # noqa: E503
         self.soft_validators = meta.soft_validators if hasattr(meta, 'soft_validators') else {}
 
-        self.button_text = meta.button_text if hasattr(meta, 'button_text') else 'Send'
+        self.button_text = str(meta.button_text) if hasattr(meta, 'button_text') else 'Send'
 
         self.i18n_phrases = meta.i18n_phrases if hasattr(meta, 'i18n_phrases') else {}
 
