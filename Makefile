@@ -10,6 +10,7 @@ install:
 
 release:
 	make front.build
+	rm -f ./dist/*
 	poetry build
 
 # Frontend (JS, webpack, React)
