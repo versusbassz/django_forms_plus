@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django_forms_plus"
-version = "0.1.1"
+version = "0.1.2"
 description = "React-powered forms for Django"
 license = "MIT"
 authors = ["Vladimir Sklyar <versus.post@gmail.com>"]
