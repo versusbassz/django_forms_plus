@@ -1,0 +1,30 @@
+- name: dfp-form-container
+
+- name: dfp-preloader
+
+- name: dfp-form
+  elements: [tag, inner]
+
+- name: dfp-fieldset
+  elements: [title, desc, items]
+  modifiers: [simple]
+
+- name: dfp-fieldslot
+  elements: [title, field, help-text, errors, soft-errors]
+  modifiers: [valid, invalid, softly-invalid, focus]
+
+- name: dfp-field-error
+
+- name: dfp-separator
+
+- name: dfp-message
+  modifiers: [success, error]
+  elements: [content, close-wrapper, close]
+
+- name: dfp-submit-button
+  modifiers: [loading]
+
+- name: dpf-submit-indicator
+
+- name: dfp-common-errors
+  elements: [item]

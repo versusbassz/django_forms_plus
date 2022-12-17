@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Profiles</h1>
+
+<div>
+    <a href="{% url 'blog_react:profile_add' %}">Создать профиль</a>
+</div>
+
+<ul>
+{% for item in object_list %}
+    <li>
+        {{ item.id }}
+        <a href="{% url 'blog_react:profile_change' item.id %}">{{ item.email }}</a>
+        -
+        <a href="{% url 'blog_react:profile_delete' item.id %}">Delete</a>
+    </li>
+{% empty %}
+    <li>No profiles yet.</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

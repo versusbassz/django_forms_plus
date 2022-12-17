@@ -1,15 +1,22 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.js
+__pycache__
+
+# dev_site
+/dev_site/static/*
+/dev_site/db.sqlite3
 
 # testing
 /coverage
 
 # production
 /build
+/dist
+/django_forms_plus/static/django_forms_plus
 
 # misc
 .idea

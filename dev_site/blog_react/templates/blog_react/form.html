@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div x-data="{cur_tab: 'form'}" class="tabs">
+    <div class="tabs__buttons">
+        <a href="javascript:void(0)" class="tabs__button" @click="cur_tab = 'form'">Form</a>
+        <a href="javascript:void(0)" class="tabs__button" @click="cur_tab = 'schema'">Schema</a>
+        <a href="javascript:void(0)" class="tabs__button" @click="cur_tab = 'schema_raw'">Schema (raw)</a>
+    </div>
+
+    <div class="tabs__contents">
+        <div x-bind:class="cur_tab !== 'form' && 'hidden'">
+            {{ form.html }}
+        </div>
+
+        <div x-bind:class="cur_tab !== 'schema' && 'hidden'">
+            <pre class="pre">{{ form_state_formatted }}</pre>
+        </div>
+
+        <div x-bind:class="cur_tab !== 'schema_raw' && 'hidden'">
+            <div><b>CSRF</b></div>
+            <pre class="pre">{{ csrf_token }}</pre>
+            <div><b>Schema</b></div>
+            <pre class="pre">{{ form_state.json | safe }}</pre>
+        </div>
+
+    </div>
+
+    <div style="display: none !important;">
+        <div class="js-external-html-1">
+            <div style="display: block; margin: 20px 0; padding: 10px; font-weight:bold; font-size: 1.4em; background-color: #eee;">
+                This is external HTML block
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

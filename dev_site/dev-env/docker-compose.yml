@@ -1,0 +1,38 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:14.3-bullseye # https://hub.docker.com/_/postgres
+    environment:
+      # host: db
+      # user: postgres
+      POSTGRES_PASSWORD: 123456
+      # db_name: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - db_files:/var/lib/postgresql/data
+    restart: always
+
+  redis:
+    image: redis:7.0.5-bullseye
+    ports:
+      - 6379:6379
+    restart: always
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    restart: always
+
+  smtp4dev:
+    image: rnwood/smtp4dev
+    ports:
+      - "2525:25" # without quotes docker gets failed
+      - "8025:80" # without quotes docker gets failed
+    restart: always
+    environment:
+      - ServerOptions__HostName=smtp4dev
+volumes:
+  db_files:

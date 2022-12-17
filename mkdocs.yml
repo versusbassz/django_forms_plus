@@ -1,0 +1,11 @@
+site_name: django_forms_plus (DFP) docs
+nav:
+    - Overview: 'index.md'
+    - 'User guide':
+        - Form Meta: user-guide/form-meta.md
+        - Composite forms: user-guide/composite.md
+        - Conditional logic: user-guide/conditinal-logic.md
+        - Debugging: user-guide/debug.md
+        - Other features: user-guide/misc.md
+        - CSS: user-guide/css.md
+        - Alternatives: user-guide/alternatives.md

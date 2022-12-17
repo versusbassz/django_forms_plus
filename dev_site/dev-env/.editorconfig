@@ -1,0 +1,8 @@
+root = true
+
+[Makefile]
+indent_style = tab
+
+[docker-compose.yml]
+indent_style = space
+indent_size = 2

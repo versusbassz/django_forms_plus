@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Customers</h1>
+
+<div>
+    <a href="{% url 'blog_react:customer_add' %}">Создать customer</a>
+</div>
+
+<ul>
+{% for item in object_list %}
+    <li>
+        {{ item.id }}
+        <a href="{% url 'blog_react:customer_change' item.id %}">{{ item.email }}</a>
+        -
+        <a href="{% url 'blog_react:customer_delete' item.id %}">Delete</a>
+    </li>
+{% empty %}
+    <li>No customers yet.</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

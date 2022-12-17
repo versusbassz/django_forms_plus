@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <style>
+        .form-row {
+            margin-bottom: 1em;
+        }
+    </style>
+
+    <div class="form">
+        <form action="{% url 'blog_old:reset_pwd_handle' %}"
+              method="post"
+              enctype="application/x-www-form-urlencoded"
+        >
+            {% csrf_token %}
+
+            <div class="form-row">
+                {{ form_status }}<br>
+                {% for key, errors in form_errors %}
+                    {{ key }} -
+                    {{ errors }}
+                {% endfor %}
+            </div>
+
+            {% for field in form %}
+                <div class="form-row">
+                    {{ field.label }} {{ field }}
+                </div>
+            {% endfor %}
+
+            <div class="form-row">
+                <button type="submit">Отправить</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

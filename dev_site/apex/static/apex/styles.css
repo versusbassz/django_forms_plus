@@ -1,0 +1,222 @@
+body {
+    margin: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.header {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+
+    border-bottom: 1px solid #999;
+}
+
+.menu-prefix {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.menu-link {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+/* Footer */
+.footer {
+    margin-top: 40px;
+    margin-bottom: 40px;
+    border-top: 1px solid #999;
+    padding: 20px 0 0;
+}
+
+.footer-title {
+    font-weight: bold;
+}
+
+.footer-links a {
+    display: inline-block;
+    margin: 0 5px;
+}
+
+.pre {
+    /* https://stackoverflow.com/questions/248011/how-do-i-wrap-text-in-a-pre-tag */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Tabs */
+.tabs__buttons {
+    margin-bottom: 20px;
+}
+
+.tabs__button {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.tabs__contents {
+}
+
+
+/* Forms (DFP) */
+
+/* Form */
+.dfp-form {
+    margin: 30px 0;
+}
+
+.dfp-form__tag {}
+
+.dfp-form__inner {}
+
+/* Fieldset */
+.dfp-fieldset {
+    margin-bottom: 1em;
+}
+
+.dfp-fieldset__title {
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 1.2em;
+}
+
+.dfp-fieldset__desc {
+    margin-bottom: 10px;
+}
+
+/* Fieldslot */
+.dfp-fieldslot {
+    margin-bottom: 10px;
+}
+
+.dfp-fieldslot--required .dfp-fieldslot__title:after {
+    content: '*';
+    display: inline-block;
+    margin-left: 0.15em;
+    color: red;
+}
+
+.dfp-fieldslot__title {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.dfp-fieldslot__help-text {
+    margin-top: 7px;
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+/* Message */
+.dfp-message {
+    padding: 10px;
+}
+.dfp-message--success {
+    background-color: #90e09b;
+}
+.dfp-message--error {
+    background-color: #fca;
+}
+.dfp-message__content {
+}
+.dfp-message__close-wrapper {
+    margin-top: 10px;
+}
+.dfp-message__close {
+}
+
+.dfp-common-errors {
+    margin: 20px 0;
+    border: 1px solid #f22;
+    padding: 10px;
+}
+
+.dfp-common-errors__item {
+    color: #f22;
+    font-size: 0.9em;
+}
+
+/* ??? */
+.dfp-field-error {
+    margin-top: 5px;
+    color: #f22;
+    font-size: 0.9em;
+}
+
+/* Form preloader */
+/*.dfp-preloader {*/
+/*  width: 48px;*/
+/*  height: 48px;*/
+/*  background: #313131;*/
+/*  display: inline-block;*/
+/*  border-radius: 50%;*/
+/*  box-sizing: border-box;*/
+/*  animation: animloader 1s ease-in infinite;*/
+/*}*/
+/*@keyframes animloader {*/
+/*  0% {*/
+/*    transform: scale(0);*/
+/*    opacity: 1;*/
+/*  }*/
+/*  100% {*/
+/*    transform: scale(1);*/
+/*    opacity: 0;*/
+/*  }*/
+/*}*/
+.dfp-preloader-wrapper {
+    display: flex;
+    width: 180px;
+    justify-content: center;
+}
+.dfp-preloader {
+    display: block;
+    width: 30px;
+    height: 30px;
+    margin: 0 auto;
+}
+.dfp-preloader:after {
+  content: " ";
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: 4px;
+  border-radius: 50%;
+  border: 3px solid #B8B8B8FF;
+  border-color: #B8B8B8FF transparent #B8B8B8FF transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+
+/* Forms custom */
+input[readonly], textarea[readonly] {
+    opacity: 0.5;
+}
+
+input[disabled], textarea[disabled] {
+    background-color: #ebebeb;
+}
+
+textarea {
+    min-width: 180px;
+    min-height: 20px;
+}
