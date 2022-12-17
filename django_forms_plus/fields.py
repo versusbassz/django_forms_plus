@@ -16,6 +16,6 @@ class CheckboxInput(forms.CheckboxInput):
     """
     dfp_field = True  # experimental, not used yet
 
-    def __init__(self, label_hint='None', *args, **kwargs):
+    def __init__(self, label_hint=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.label_hint = label_hint if label_hint else ''
