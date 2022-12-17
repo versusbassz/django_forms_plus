@@ -70,6 +70,7 @@ const other_attrs = (field_spec, setFocusedField) => {
   }
 
   const attrs_map = {
+    class: 'className',
     minlength: 'minLength',
     maxlength: 'maxLength',
     readonly: 'readOnly',
