@@ -1,17 +1,26 @@
-# Django-Forms-Plus (dfplus)
+# django_forms_plus (DPF)
 
-The extendable ReactJS powered frontend for Django Forms 
-controled by forms.BaseForm native declarations with some additions.
+The extendable ReactJS-powered rendering layer for Django Forms.
 
-Define your forms in python code as usually you do and get React powered forms UI
-almost for free ;)
+## The state of the project
+**This package in in ALPHA state. DON'T USE ON PRODUCTION (or do it on your own risk).
+The architecture and approaches can get changed significantly in next versions.**  
+Also, there aren't so many supported fields and widgets for now
+since it's just a proof of concept mostly.
 
-## Features
-- how to define a form? like a regular `forms.BaseForm` with some additions
-- how are forms submitted? via AJAX
-- validation & errors 
-- fieldsets (layouts)
-- customization
-  - Python: use regular Django's idiomatic patterns/approaches around `django.forms` with some additions
-  - JS: React code was build with extensibility in mind
-  - CSS: use regular CSS classes, add your own. No CSS-in-JS (it's a by design decision)
+## Docs
+Will be available in next versions.
+
+## Dependencies
+
+### Javascript
+- react, react-dom
+- react-hook-form - [site](https://react-hook-form.com/)
+- yup - [npm](https://www.npmjs.com/package/yup)
+- classnames
+
+### Python
+- pydantic
+
+## License
+MIT
