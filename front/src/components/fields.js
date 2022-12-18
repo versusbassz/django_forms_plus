@@ -36,6 +36,29 @@ function useFieldAttrs(name) {
   ];
 }
 
+
+/**
+ * Prepares HTML attributes names for React
+ * Mutates a props of a provided object.
+ */
+function transformAttrs(attrs) {
+  const attrs_map = {
+    class: 'className',
+    minlength: 'minLength',
+    maxlength: 'maxLength',
+    readonly: 'readOnly',
+    autocomplete: 'autoComplete',
+  };
+
+  for (let key of Object.keys(attrs)) {
+    if (key in attrs_map) {
+      attrs[attrs_map[key]] = attrs[key];
+      delete attrs[key];
+    }
+  }
+  return attrs;
+}
+
 /**
  *
  * @see https://react-hook-form.com/api/useform/register
@@ -69,21 +92,7 @@ const other_attrs = (field_spec, setFocusedField) => {
     },
   }
 
-  const attrs_map = {
-    class: 'className',
-    minlength: 'minLength',
-    maxlength: 'maxLength',
-    readonly: 'readOnly',
-    autocomplete: 'autoComplete',
-  }
-
-  for (let key of Object.keys(attrs)) {
-    if (key in attrs_map) {
-      attrs[attrs_map[key]] = attrs[key];
-      delete attrs[key];
-    }
-  }
-
+  transformAttrs(attrs);
   return attrs;
 }
 
