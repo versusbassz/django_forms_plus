@@ -61,11 +61,11 @@ export function FieldSlot({ name }) {
   return (
     <div className={classNames(css_classes)}>
       {field_spec.label ? <div className="dfp-fieldslot__title">{field_spec.label}</div> : null}
-      <div className="dfp-fieldslot__field">{input}</div>
       {field_spec.help_text && (
         <div className="dfp-fieldslot__help-text"
              dangerouslySetInnerHTML={{__html: field_spec.help_text}} />
       )}
+      <div className="dfp-fieldslot__field">{input}</div>
       {has_errors && (
         <div className="dfp-fieldslot__errors">
           <FieldError name={name} />
