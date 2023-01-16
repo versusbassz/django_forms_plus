@@ -17,3 +17,29 @@ export function DebugPanel({spec}) {
     </div>
   );
 }
+
+/**
+ *
+ * @param {string} name
+ * @param {*} value
+ */
+export function dumpVar(name, value) {
+  const specialClasses = [
+    HTMLElement,
+  ];
+  let special_value = false;
+
+  for (let cls of specialClasses) {
+    if (value instanceof cls) {
+      special_value = true;
+      break;
+    }
+  }
+
+  if (special_value) {
+    console.log(`[${name}]`, typeof value, '###');
+    console.dir(value);
+  } else {
+    console.log(`[${name}]`, typeof value, '#', value);
+  }
+}
