@@ -18,6 +18,9 @@ __pycache__
 /dist
 /django_forms_plus/static/django_forms_plus
 
+# custom
+/custom/*
+
 # misc
 .idea
 .DS_Store
