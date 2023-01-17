@@ -43,7 +43,7 @@ export function FieldSlot({ name }) {
   const has_errors = formState.errors[name];
 
   const has_soft_checks = field_spec.soft_validators?.length;
-  const has_soft_errors = has_soft_checks && (validateOnStart || isTouched || formSubmittedOnce) && ! value;
+  const has_soft_errors = has_soft_checks && (validateOnStart || isTouched || formSubmittedOnce) && ! value; // soft_validator:required
   const show_soft_errors = ! isFocused && ! has_errors && has_soft_errors;
 
   const show_valid_class = isTouched && ! isFocused  && ! has_errors && ! show_soft_errors;

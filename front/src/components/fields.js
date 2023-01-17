@@ -3,12 +3,14 @@ import classNames from "classnames";
 
 import { useFieldSpec } from "../inc/hooks";
 import { FormContext } from "../parts";
-
+import { ImageUpload } from "./field-file";
 
 export const fieldspec_to_input = (name, field_spec) => {
   switch (field_spec.type) {
     case 'text':
       return <InputText name={name} />;
+    case 'slug':
+      return <InputSlug name={name} />;
     case 'number':
       return <InputNumber name={name} />;
     case 'email':
@@ -17,6 +19,8 @@ export const fieldspec_to_input = (name, field_spec) => {
       return <Textarea name={name} />;
     case 'checkbox':
       return <InputCheckbox name={name} />;
+    case 'image':
+      return <ImageUpload name={name} />;
     case 'hidden':
       return <InputHidden name={name} />;
     case 'captcha':
@@ -26,7 +30,7 @@ export const fieldspec_to_input = (name, field_spec) => {
   }
 };
 
-function useFieldAttrs(name) {
+export function useFieldAttrs(name) {
   const [field_spec, rhf] = useFieldSpec(name);
   const { setFocusedField, rhf: { trigger } } = useContext(FormContext);
   return [
@@ -34,29 +38,6 @@ function useFieldAttrs(name) {
     rhf_options(field_spec, setFocusedField, trigger),
     other_attrs(field_spec, setFocusedField),
   ];
-}
-
-
-/**
- * Prepares HTML attributes names for React
- * Mutates a props of a provided object.
- */
-function transformAttrs(attrs) {
-  const attrs_map = {
-    class: 'className',
-    minlength: 'minLength',
-    maxlength: 'maxLength',
-    readonly: 'readOnly',
-    autocomplete: 'autoComplete',
-  };
-
-  for (let key of Object.keys(attrs)) {
-    if (key in attrs_map) {
-      attrs[attrs_map[key]] = attrs[key];
-      delete attrs[key];
-    }
-  }
-  return attrs;
 }
 
 /**
@@ -70,7 +51,7 @@ const rhf_options = (field_spec, setFocusedField, trigger) => {
   const attrs = {
     disabled: field_spec.disabled,
     value: field_spec.initial,
-    onBlur: () => { // rhf dosn't use onFocus: see: https://react-hook-form.com/api/useform/register
+    onBlur: () => { // rhf doesn't use onFocus: see: https://react-hook-form.com/api/useform/register
       console.log(`blur: ${field_spec.name}`);
       setFocusedField(null);
       trigger(field_spec.name);
@@ -92,7 +73,21 @@ const other_attrs = (field_spec, setFocusedField) => {
     },
   }
 
-  transformAttrs(attrs);
+  const attrs_map = {
+    class: 'className',
+    minlength: 'minLength',
+    maxlength: 'maxLength',
+    readonly: 'readOnly',
+    autocomplete: 'autoComplete',
+  }
+
+  for (let key of Object.keys(attrs)) {
+    if (key in attrs_map) {
+      attrs[attrs_map[key]] = attrs[key];
+      delete attrs[key];
+    }
+  }
+
   return attrs;
 }
 
@@ -104,6 +99,20 @@ function InputText({name}) {
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   return (
     <input type="text" {...rhf.register(name, rhf_options)} {...other_attrs} />
+  )
+}
+
+function InputSlug({name}) {
+  const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
+  const [field_spec, _] = useFieldSpec(name);
+
+  return (
+    <div className="dfp-input-slug">
+      <div className="dfp-input-slug__prefix">{field_spec.prefix}</div>
+      <div className="dfp-input-slug__input-wrapper">
+        <input type="text" {...rhf.register(name, rhf_options)} {...other_attrs} />
+      </div>
+    </div>
   )
 }
 

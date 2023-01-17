@@ -1,3 +1,5 @@
+from django.db.models.fields.files import ImageFieldFile
+
 from .types import DjangoForm, FormState, FormSpec, FormData
 from .errors import get_global_error_messages, get_error_message
 from .layout import LayoutItem
@@ -36,6 +38,7 @@ def get_form_spec(form: DjangoForm) -> FormState:
             field_spec['initial'] = field.initial
 
         # Error messages (i18n)
+        # TODO unify the logic
         global_messages = get_global_error_messages()
         field_spec['errors'] = {}
 
@@ -44,6 +47,7 @@ def get_form_spec(form: DjangoForm) -> FormState:
         if field_spec[error_name]:
             error_value = get_error_message(name, error_name, helper, global_messages)
             field_spec['errors'][error_name] = error_value
+        # also see the logic in validators
 
         # attrs
         field_spec['attrs'] = widget.attrs
@@ -56,6 +60,7 @@ def get_form_spec(form: DjangoForm) -> FormState:
 
         # Validators
         field_spec['validators'] = []
+        has_custom_validators = hasattr(helper, 'validators')
         field_name = type(field).__name__
         match field_name:
             case 'CharField':
@@ -65,6 +70,14 @@ def get_form_spec(form: DjangoForm) -> FormState:
                 if hasattr(field, 'min_length') and field.min_length:
                     field_spec['validators'].append({'name': 'min_length',
                                                      'value': field.min_length})
+            case 'ImageField':
+                if has_custom_validators and name in helper.validators:
+                    for validator in helper.validators[name]:
+                        field_spec['validators'].append({'name': validator['name'],
+                                                         'value': validator['value']})
+                        # TODO move this error_messages logic to its main part
+                        error_value = get_error_message(name, validator['name'], helper, global_messages)
+                        field_spec['errors'][validator['name']] = str(error_value)
 
         # Soft validators
         has_soft_validators = hasattr(helper, 'soft_validators') and name in helper.soft_validators
@@ -74,9 +87,13 @@ def get_form_spec(form: DjangoForm) -> FormState:
                                         if has_soft_validators else []
         field_spec['soft_errors'] = soft_errors if has_soft_validators else []
 
-        # attr: type
+        # attr: type  + specific settings
         widget_name = widget_type.__name__
         match widget_name:
+            case 'SlugInput':
+                field_spec['type'] = 'slug'
+                field_spec['prefix'] = widget.prefix if hasattr(widget, 'prefix') else ''
+                default_initial = ''
             case 'TextInput':
                 field_spec['type'] = 'text'
                 default_initial = ''
@@ -93,10 +110,21 @@ def get_form_spec(form: DjangoForm) -> FormState:
                 field_spec['label_hint'] = str(field.label)
                 if not field.label and hasattr(widget, 'label_hint') and widget.label_hint:
                     field_spec['label_hint'] = str(widget.label_hint)
-
                 # TODO widget.attrs['checked'] (bool) ??? but initial is enough basically
             case 'HiddenInput':
                 field_spec['type'] = 'hidden'
+            case 'ClearableFileInput':
+                field_spec['type'] = 'image'
+                field_spec['checkbox_name'] = widget.clear_checkbox_name(name)
+                field_spec['checkbox_id'] = widget.clear_checkbox_id(name)
+            case 'CroppedImageInput':
+                field_spec['type'] = 'image'
+                field_spec['checkbox_name'] = widget.clear_checkbox_name(name)
+                field_spec['checkbox_id'] = widget.clear_checkbox_id(name)
+                if isinstance(field_spec['initial'], ImageFieldFile):
+                    field_spec['initial'] = transform_image_field_file(field_spec['initial'])
+                field_spec['expected_width'] = widget.expected_width
+                field_spec['expected_height'] = widget.expected_height
             case 'CaptchaInput':
                 field_spec['type'] = 'captcha'
                 default_initial = ''
@@ -172,3 +200,14 @@ def _transform_fieldset_fields(fields: list) -> list:
             field_spec = field
         result.append(field_spec)
     return result
+
+
+def transform_image_field_file(file: ImageFieldFile | None) -> dict:
+    data = {
+        'exists': False,
+        'url': '',
+    }
+    if file and file.name:
+        data['exists'] = True
+        data['url'] = file.url
+    return data

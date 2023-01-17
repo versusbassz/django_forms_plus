@@ -1,9 +1,11 @@
 import { sprintf } from "./utils";
 import { i18n_phrases as default_i18n_phrases } from "./i18n";
 
-export async function submitForm(data, e, context, reset, setValue, setCommonErrors, setLoading, cur_i18n_phrases) {
+export async function submitForm(data, e, { fields, i18n_phrases }, context, reset, setValue,
+                                 setCommonErrors, setLoading, setSubmitResult,
+) {
   console.log('SUBMIT - START');
-  const i18n_phrases = Object.keys(cur_i18n_phrases).length ? cur_i18n_phrases : default_i18n_phrases;
+  const _i18n_phrases = Object.keys(i18n_phrases).length ? i18n_phrases : default_i18n_phrases;
 
   const form = e.target
   const {spec} = context
@@ -28,7 +30,7 @@ export async function submitForm(data, e, context, reset, setValue, setCommonErr
 
   if (! response_raw.ok) {
     setLoading(false);
-    const error = sprintf(i18n_phrases.http_error, response_raw.status) + ' ' + i18n_phrases.try_again_late;
+    const error = sprintf(_i18n_phrases.http_error, response_raw.status) + ' ' + _i18n_phrases.try_again_late;
     setCommonErrors([error]);
     return;
   }
@@ -38,7 +40,7 @@ export async function submitForm(data, e, context, reset, setValue, setCommonErr
     response = await response_raw.json();
   } catch (e) {
     setLoading(false);
-    const error = i18n_phrases.http_response_invalid + ' ' + i18n_phrases.try_again_late;
+    const error = _i18n_phrases.http_response_invalid + ' ' + _i18n_phrases.try_again_late;
     setCommonErrors([error]);
     return;
   }
@@ -53,11 +55,15 @@ export async function submitForm(data, e, context, reset, setValue, setCommonErr
       if (has_payload) {
         Object.entries(response.payload).forEach(([key, value], index) => {
           // console.log('NEW KEY', key, value, index);
+          if (fields[key].type === 'image') {
+            value = '';
+          }
           setValue(key, value, { shouldValidate: true });
         });
       } else {
         reset();
       }
+      setSubmitResult(response?.payload)
       setCommonErrors([]);
       do_action(response, context);
       break;

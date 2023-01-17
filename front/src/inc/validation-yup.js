@@ -1,4 +1,4 @@
-import { object, string, number, boolean, setLocale } from 'yup';
+import { object, string, number, boolean, mixed, setLocale } from 'yup';
 
 import { CSRF_TOKEN_NAME } from "./constants";
 import {collect_followed_fields, check_cl_state} from "./conditional-logic";
@@ -43,6 +43,36 @@ export function build_validation_schema(spec) {
         base_type = boolean();
         rule = boolean();
         break;
+      case 'image':
+        base_type = mixed();
+        rule = mixed();
+        field.validators.forEach(validator => {
+          const error_text = field.errors[validator.name];
+
+          switch (validator.name) {
+            case 'file_size':
+              rule = rule.test('file_size', error_text, (value, context) => {
+                if (! value?.length) {
+                  return true; // attachment is optional
+                }
+                return value[0].size <= validator.value;
+              });
+              break;
+            case 'file_type':
+              rule = rule.test('file_type', error_text, (value, context) => {
+                if (! value?.length) {
+                  return true; // attachment is optional
+                }
+                const validTypes = validator.value;
+                return validTypes.includes(value[0].type);
+              });
+              break;
+            default:
+              throw Error(`Unknown validator: ${validator?.name}`);
+          }
+        });
+        break;
+
       default:
         base_type = string();
         rule = string();
@@ -70,11 +100,7 @@ export function build_validation_schema(spec) {
     items[name] = rule;
   });
 
-  const schema = object(items);
-  // console.log('validation rules:', items);
-  // console.log('validation schema:', schema);
-
-  return schema;
+  return object(items);
 }
 
 function getIsFunc(cl_groups, followed_fields_list) {

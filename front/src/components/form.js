@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -10,16 +10,19 @@ import { DebugPanel, SuccessMessage,
 
 export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) {
   const validation_schema = build_validation_schema(spec);
-  const { handleSubmit, reset, register, watch, control, setValue, trigger, formState, getFieldState } = useForm({
+  const {
+    handleSubmit, reset, register, watch, control, setValue, trigger, formState, getFieldState,
+    clearErrors,
+  } = useForm({
     resolver: yupResolver(validation_schema),
   });
-  const form_ref = useRef();
 
   const [ successMsg, setSuccessMsg ] = useState('');
   const [ commonErrors, setCommonErrors ] = useState([]);
   const closeSuccessMsg = () => setSuccessMsg('');
 
   const [loading, setLoading] = useState(false);
+  const [submitResult, setSubmitResult] = useState();
 
   const [ focusedField, setFocusedField ] = useState(null);
   const [validateOnStart, setValidateOnStart] = useState(false);
@@ -48,16 +51,21 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
 
   const context = {
     spec: spec,
-    rhf: { register, watch, trigger, formState, getFieldState },
+    rhf: { register, watch, trigger, formState, getFieldState, setValue, clearErrors },
     loading: loading,
+    submitResult: submitResult,
     setSuccessMsg: setSuccessMsg,
     focusedField: focusedField, setFocusedField: setFocusedField,
     validateOnStart: validateOnStart,
+    debugEnabled: debugEnabled,
   };
   const fieldsets = spec.fieldsets;
 
   const onSubmit = (data, e) => {
-    submitForm(data, e, context, reset, setValue, setCommonErrors, setLoading, spec.i18n_phrases);
+    submitForm(
+      data, e, spec, context, reset, setValue,
+      setCommonErrors, setLoading, setSubmitResult,
+    );
   }
 
   return (
@@ -68,7 +76,6 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
         <form className="dfp-form__tag"
               action={spec.action} method={spec.method} encType={spec.enctype}
               onSubmit={handleSubmit(onSubmit)}
-              ref={form_ref}
         >
           <div className="dfp-form__inner">
 

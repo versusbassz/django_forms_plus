@@ -8,6 +8,7 @@ def get_error_message(name: str, error_name: str, meta, global_messages: dict) -
     error_value = f'error_code: {error_name}'
 
     # search in DfpMeta.error_messages -> name
+    # TODO use native Form.Meta.errors_messages and remove the custom helper attribute
     if hasattr(meta, 'error_messages') \
             and name in meta.error_messages \
             and error_name in meta.error_messages[name]:
