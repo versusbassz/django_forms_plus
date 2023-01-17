@@ -39,11 +39,9 @@ export function check_cl_state(cl_groups, followedFieldsState) {
     } // loop: rules of a group
 
     if (group_valid) {
-      console.log('CL_RESULT:', true);
       return true;
     }
   } // loop: groups
 
-  console.log('CL_RESULT:', false);
   return false;
 }

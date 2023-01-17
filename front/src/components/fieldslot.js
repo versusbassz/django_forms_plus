@@ -27,7 +27,6 @@ export function FieldSlot({ name }) {
   const { spec,  rhf: { watch, formState }, focusedField, validateOnStart, loading } = useContext(FormContext);
   const field_spec = spec.fields[name];
   const input = fieldspec_to_input(name, field_spec);
-  // console.log(formState);
 
   const [field_has_cl, cl_groups, followedFieldsState] = useFieldCL(spec, name, watch);
 

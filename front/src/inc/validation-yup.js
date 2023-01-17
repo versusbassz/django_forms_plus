@@ -4,21 +4,7 @@ import { CSRF_TOKEN_NAME } from "./constants";
 import {collect_followed_fields, check_cl_state} from "./conditional-logic";
 
 export function build_validation_schema(spec) {
-  // let schema = object({
-  //   first_name: string().required('REQUIRED1111111111').typeError('REQUIRED2222222222'),
-  //   email: string().required(),
-  //   message: string().required(),
-  //   captcha: string().required(),
-    // age: number().required().positive().integer(),
-    // email: string().email(),
-    // website: string().url().nullable(),
-    // createdOn: date().default(() => new Date()),
-  // });
-
-  let cl_fields = [];
-  if (spec?.conditional_logic?.rules && spec.conditional_logic.rules) {
-    cl_fields = spec.conditional_logic.rules;
-  }
+  let cl_fields = spec?.conditional_logic?.rules ? spec.conditional_logic.rules : [];
 
   const items = {}
   items[CSRF_TOKEN_NAME] = string().required();
@@ -27,7 +13,8 @@ export function build_validation_schema(spec) {
     if (field.disabled) {
       return;
     }
-    let rule, base_type;
+    let rule;
+    let base_type; // for CL
 
     switch (field.type) {
       case 'text':
@@ -64,9 +51,6 @@ export function build_validation_schema(spec) {
     if (field.required) {
        rule = rule.required(field.errors.required);
     }
-    // else {
-    //   rule = rule.nullable();
-    // }
 
     const has_cl = !! cl_fields[name];
     if (has_cl) {
@@ -100,8 +84,6 @@ function getIsFunc(cl_groups, followed_fields_list) {
       const name = followed_fields_list[index];
       followedFieldsState[name] = value;
     });
-    console.log('args:', args);
-    console.log('followedFieldsState:', followedFieldsState);
 
     return check_cl_state(cl_groups, followedFieldsState);
   };

@@ -46,10 +46,6 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
     }
   }, []);
 
-  // console.log('formState', formState);
-  // console.log('errors:', formState.errors);
-  // console.log('commonErrors:', commonErrors);
-
   const context = {
     spec: spec,
     rhf: { register, watch, trigger, formState, getFieldState },

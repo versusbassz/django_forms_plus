@@ -24,8 +24,6 @@ const mapFieldsetItem = (item, index) => {
 export function Fieldset({index}) {
   const {spec} = useContext(FormContext);
   const fieldset_spec = spec.fieldsets[index];
-  // console.log('spec:', spec);
-  // console.log('fieldset_spec:', fieldset_spec);
   return (
     <FieldsetFull
       title={fieldset_spec.title}
