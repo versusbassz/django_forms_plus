@@ -52,7 +52,7 @@ def get_form_spec(form: DjangoForm) -> FormState:
 
         if field_spec[error_name]:
             error_value = get_error_message(name, error_name, helper, global_messages)
-            field_spec['errors'][error_name] = error_value
+            field_spec['errors'][error_name] = str(error_value)
         # also see the logic in validators
 
         # attrs
