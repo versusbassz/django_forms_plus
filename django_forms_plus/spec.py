@@ -67,7 +67,7 @@ def get_form_spec(form: DjangoForm) -> FormState:
         # Validators
         field_spec['validators'] = []
         has_custom_validators = hasattr(helper, 'validators')
-        field_name = type(field).__name__
+        field_name = field.dfp_field_name if hasattr(field, 'dfp_field_name') else type(field).__name__
         match field_name:
             case 'CharField':
                 if hasattr(field, 'max_length') and field.max_length:
