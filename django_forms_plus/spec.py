@@ -12,10 +12,16 @@ def get_form_spec(form: DjangoForm) -> FormState:
     helper = form.helper
     helper_has_placeholders = hasattr(helper, 'placeholders')
 
+    # we need to process bound fields to act closely to the original Django forms logic
+    # see django.forms.forms.BaseForm.__iter__
+    #     (as an entry point during rendering forms in templates)
+    bound_fields = {f_name: form[f_name] for f_name in form.fields}
+
     fields = {}
     hidden_fields = []
-    for name, field in form.fields.items():
-        widget = field.widget
+    for name, bound_field in bound_fields.items():
+        field = bound_field.field
+        widget = bound_field.field.widget
         widget_type = type(widget)
         field_spec = {
             'name': name,
