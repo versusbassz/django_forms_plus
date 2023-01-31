@@ -1,9 +1,9 @@
-# django_forms_plus (DPF)
+# django_forms_plus (DFP)
 
 The extendable ReactJS-powered rendering layer for Django Forms.
 
 ## The state of the project
-**This package in in ALPHA state. DON'T USE ON PRODUCTION (or do it on your own risk).
+**This package is in ALPHA state. DON'T USE ON PRODUCTION (or do it on your own risk).
 The architecture and approaches can get changed significantly in next versions.**  
 Also, there aren't so many supported fields and widgets for now
 since it's just a proof of concept mostly.
