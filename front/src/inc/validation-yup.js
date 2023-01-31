@@ -51,21 +51,10 @@ export function build_validation_schema(spec) {
 
           switch (validator.name) {
             case 'file_size':
-              rule = rule.test('file_size', error_text, (value, context) => {
-                if (! value?.length) {
-                  return true; // attachment is optional
-                }
-                return value[0].size <= validator.value;
-              });
+              rule = rule.test('file_size', error_text, get_file_size_validator(validator));
               break;
             case 'file_type':
-              rule = rule.test('file_type', error_text, (value, context) => {
-                if (! value?.length) {
-                  return true; // attachment is optional
-                }
-                const validTypes = validator.value;
-                return validTypes.includes(value[0].type);
-              });
+              rule = rule.test('file_type', error_text, get_file_type_validator(validator));
               break;
             default:
               throw Error(`Unknown validator: ${validator?.name}`);
@@ -102,6 +91,25 @@ export function build_validation_schema(spec) {
 
   return object(items);
 }
+
+const get_file_size_validator = (validator) => {
+  return (value, context) => {
+    if (! value?.length) {
+      return true; // attachment is optional
+    }
+    return value[0].size <= validator.value;
+  }
+}
+
+const get_file_type_validator = (validator) => {
+  return (value, context) => {
+    if (! value?.length) {
+      return true; // attachment is optional
+    }
+    const validTypes = validator.value;
+    return validTypes.includes(value[0].type);
+  };
+};
 
 function getIsFunc(cl_groups, followed_fields_list) {
   return (...args) => {
