@@ -42,10 +42,19 @@ export function FieldSlot({ name }) {
 
   const has_errors = formState.errors[name];
 
+  // Soft errors
   const has_soft_checks = field_spec.soft_validators?.length;
-  const has_soft_errors = has_soft_checks && (validateOnStart || isTouched || formSubmittedOnce) && ! value; // soft_validator:required
+  const allow_soft_errors = validateOnStart || isTouched || formSubmittedOnce;
+
+  let has_soft_errors = false;
+  let soft_errors = [];
+  if (has_soft_checks && allow_soft_errors) {
+    soft_errors = validate_soft_errors(name, field_spec, value);
+    has_soft_errors = !! soft_errors.length;
+  }
   const show_soft_errors = ! isFocused && ! has_errors && has_soft_errors;
 
+  // CSS
   const show_valid_class = isTouched && ! isFocused  && ! has_errors && ! show_soft_errors;
 
   const css_classes = {
@@ -71,8 +80,34 @@ export function FieldSlot({ name }) {
         </div>
       )}
       {show_soft_errors ? (
-        <div className="dfp-fieldslot__soft-errors">{field_spec.soft_errors.required}</div>
+        <div className="dfp-fieldslot__soft-errors">
+          {soft_errors.map((err, index) => (
+            <div key={index}>{err}</div>
+          ))}
+        </div>
       ) : null}
     </div>
   );
+}
+
+function validate_soft_errors(name, field_spec, value) {
+    const errors = [];
+
+    for (const check of field_spec.soft_validators) {
+      switch (check.name) {
+        case 'required':
+          ! value && errors.push(check.message)
+          break;
+        case 'regexp':
+          const regexp = RegExp(check.value);
+          const is_match_raw = regexp.exec(value) !== null;
+          const is_err = check.inverse ? is_match_raw : ! is_match_raw;
+          is_err && errors.push(check.message);
+          break;
+        default:
+          console.warn(`Unknown validator: ${check.name}`);
+          break;
+      }
+    }
+    return errors;
 }

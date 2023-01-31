@@ -86,12 +86,16 @@ def get_form_spec(form: DjangoForm) -> FormState:
                         field_spec['errors'][validator['name']] = str(error_value)
 
         # Soft validators
+        field_spec['soft_validators'] = []
         has_soft_validators = hasattr(helper, 'soft_validators') and name in helper.soft_validators
-        soft_errors = {key: str(value) for key, value in helper.soft_validators[name].items()} \
-                      if has_soft_validators else {}
-        field_spec['soft_validators'] = [key for key, msg in soft_errors.items()] \
-                                        if has_soft_validators else []
-        field_spec['soft_errors'] = soft_errors if has_soft_validators else []
+        if has_soft_validators:
+            for validator in helper.soft_validators[name]:
+                field_spec['soft_validators'].append({
+                    'name': validator['name'],
+                    'value': validator['value'] if 'value' in validator else None,
+                    'inverse': validator['inverse'] if 'inverse' in validator else False,
+                    'message': str(validator['message']),  # a message is required for now
+                })
 
         # attr: type  + specific settings
         widget_name = widget_type.__name__
