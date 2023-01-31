@@ -12,9 +12,10 @@ class CaptchaInput(DumbInput):
 class SlugInput(forms.TextInput):
     dfp_field = True
 
-    def __init__(self, prefix: str = '', *args, **kwargs):
+    def __init__(self, prefix: str = '', suggestions: list | None = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.prefix = prefix
+        self.suggestions = suggestions if suggestions is not None else []
 
 
 class CheckboxInput(forms.CheckboxInput):

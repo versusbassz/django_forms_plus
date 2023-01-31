@@ -105,6 +105,11 @@ function InputText({name}) {
 function InputSlug({name}) {
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   const [field_spec, _] = useFieldSpec(name);
+  const applySuggestion = (e, value) => {
+    e.preventDefault();
+    console.log(value);
+    rhf.setValue(name, value, { shouldValidate: true })
+  };
 
   return (
     <div className="dfp-input-slug">
@@ -112,6 +117,26 @@ function InputSlug({name}) {
       <div className="dfp-input-slug__input-wrapper">
         <input type="text" {...rhf.register(name, rhf_options)} {...other_attrs} />
       </div>
+
+      {/* Suggestions */}
+      {field_spec?.suggestions?.length ? (
+        <div className="dfp-input-slug__suggestions dfp-suggestions">
+          <div className="dfp-suggestions__prefix">Например</div>
+          <div className="dfp-suggestions__list">
+            {field_spec.suggestions.map((item, index) => {
+              return (
+                <div className="dfp-suggestions__item" key={index}>
+                  <a href="#"
+                     className="dfp-suggestions__item-link"
+                     onClick={(e) => applySuggestion(e, item)}
+                  >{item}</a>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ): null}
+
     </div>
   )
 }

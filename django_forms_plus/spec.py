@@ -103,6 +103,7 @@ def get_form_spec(form: DjangoForm) -> FormState:
             case 'SlugInput':
                 field_spec['type'] = 'slug'
                 field_spec['prefix'] = widget.prefix if hasattr(widget, 'prefix') else ''
+                field_spec['suggestions'] = widget.suggestions
                 default_initial = ''
             case 'TextInput':
                 field_spec['type'] = 'text'
