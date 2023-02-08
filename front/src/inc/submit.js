@@ -73,8 +73,10 @@ export async function submitForm(data, e, { fields, i18n_phrases }, context, res
       if (response?.errors && Object.keys(response?.errors)?.length) {
         const error_keys = Object.keys(response.errors);
         error_keys.forEach(key => {
-          errors.push(response.errors[key]);
-        })
+          for (const err of response.errors[key]) {
+            errors.push(err);
+          }
+        });
       }
       setCommonErrors(errors);
       break;
