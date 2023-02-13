@@ -13,7 +13,6 @@ def get_form_spec(form: DjangoForm) -> FormState:
         return form.helper.spec
 
     helper = form.helper
-    helper_has_placeholders = hasattr(helper, 'placeholders')
 
     # we need to process bound fields to act closely to the original Django forms logic
     # see django.forms.forms.BaseForm.__iter__
@@ -62,10 +61,6 @@ def get_form_spec(form: DjangoForm) -> FormState:
         field_spec['attrs'] = widget.attrs
         # TODO transform maxlength -> validator and remove from attrs ???
         # TODO transform minlength -> validator and remove from attrs ???
-
-        # attr: placeholder (from helper meta)
-        if helper_has_placeholders and name in helper.placeholders:
-            field_spec['attrs']['placeholder'] = helper.placeholders[name]
 
         # Validators
         field_spec['validators'] = []

@@ -24,8 +24,6 @@ class Helper(object):
 
         self.fieldsets = meta.fieldsets if hasattr(meta, 'fieldsets') else []
 
-        self.placeholders = meta.placeholders if hasattr(meta, 'placeholders') else {}
-
         self.conditional_logic = meta.conditional_logic if hasattr(meta, 'conditional_logic') else {}  # noqa: E503
 
         self.error_messages = meta.error_messages if hasattr(meta, 'error_messages') else {}

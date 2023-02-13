@@ -124,8 +124,6 @@ def _merge_helpers(root: Helper, sub: list[Helper]) -> Helper:
     # method - from root
     # enctype - from root
 
-    # placeholders - from root
-
     # TODO merge form.fields
 
     return root
