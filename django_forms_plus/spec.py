@@ -7,6 +7,9 @@ from .layout import LayoutItem
 
 def get_form_spec(form: DjangoForm) -> FormState:
     if form.helper.spec is not None:  # caching
+        # TODO probably, it's better to move the building logic
+        #      to a separate build_form_spec() function and keep caching logic here
+        # TODO do we need to clear the cache somehow ??? (an func argument / method of an object)
         return form.helper.spec
 
     helper = form.helper
@@ -14,7 +17,7 @@ def get_form_spec(form: DjangoForm) -> FormState:
 
     # we need to process bound fields to act closely to the original Django forms logic
     # see django.forms.forms.BaseForm.__iter__
-    #     (as an entry point during rendering forms in templates)
+    #     (it's an entry point during rendering forms in templates)
     bound_fields = {f_name: form[f_name] for f_name in form.fields}
 
     fields = {}
@@ -168,12 +171,12 @@ def get_form_spec(form: DjangoForm) -> FormState:
         i18n_phrases=helper.i18n_phrases,
     )
 
-    value = {}
-    data = FormData(value=value)
+    value = {}  # TODO remove ???
+    data = FormData(value=value)  # TODO remove ???
 
     form_state = FormState(
         spec=spec,
-        data=data,
+        data=data,  # TODO remove ???
         debug_enabled=helper.debug_enabled
     )
 
