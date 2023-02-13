@@ -1,3 +1,7 @@
+Tags: new, enhancement, fix, refactor, deps, internals, bc
+
+# The changelog
+
 ## 0.3.1 - 2023.02.08
 - fix: Fix displaying of server validation errors
 
