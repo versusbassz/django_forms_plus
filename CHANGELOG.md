@@ -1,11 +1,12 @@
 Tags: new, enhancement, fix, refactor, deps, internals, bc
+Sections: Spec, Features, Backend, Frontend
 
 # The changelog
 
 ## 0.4.0 - 2023.02.13
 
 Spec:
-- bc: Remove "placeholders" section (use `Meta.widgets[WIDGET].attr instead)
+- bc: Remove "placeholders" section (use `Meta.widgets[WIDGET].attrs instead)
 
 ## 0.3.1 - 2023.02.08
 - fix: Fix displaying of server validation errors
