@@ -1,7 +1,7 @@
-## 0.3.1 - 2022.02.08
+## 0.3.1 - 2023.02.08
 - fix: Fix displaying of server validation errors
 
-## 0.3.0 - 2022.01.31
+## 0.3.0 - 2023.01.31
 
 Features:
 - new, experimental: Add "suggestions" feature to SlugInput
@@ -18,7 +18,7 @@ Backend:
 Frontend:
 - new: Add "regexp" soft validator
 
-## 0.2.0 - 2022.01.17
+## 0.2.0 - 2023.01.17
 
 Backend, Spec:
 - add support for custom validators
