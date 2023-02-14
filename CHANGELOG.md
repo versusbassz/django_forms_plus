@@ -3,10 +3,17 @@ Sections: Spec, Features, Backend, Frontend
 
 # The changelog
 
-## 0.4.0 - 2023.02.13
+## 0.4.0 - 2023.02.14
 
 Spec:
+- bc, new: Support "regexp" validators + change spec in "validators / soft_validators"
 - bc: Remove "placeholders" section (use `Meta.widgets[WIDGET].attrs instead)
+
+Backend:
+- fix: Copy (shallowly) dict props of Dfp meta instead of just getting a link var to a same dict
+
+Frontend:
+- enhancement: Apply to 'slug' field type the same rules as for 'text' type during validation on frontend
 
 ## 0.3.1 - 2023.02.08
 - fix: Fix displaying of server validation errors
