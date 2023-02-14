@@ -37,8 +37,6 @@ Error messages, are used if a field doesn't have its own message for a certain e
 
 `soft_validators` - TODO
 
-`placeholders` - TODO   
-
 ## Layout parts
 
 ### ExternalHtml
