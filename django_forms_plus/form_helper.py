@@ -24,16 +24,16 @@ class Helper(object):
 
         self.fieldsets = meta.fieldsets if hasattr(meta, 'fieldsets') else []
 
-        self.conditional_logic = meta.conditional_logic if hasattr(meta, 'conditional_logic') else {}  # noqa: E503
+        self.conditional_logic = {**meta.conditional_logic} if hasattr(meta, 'conditional_logic') else {}  # noqa: E503
 
-        self.error_messages = meta.error_messages if hasattr(meta, 'error_messages') else {}
-        self.global_error_messages = meta.global_error_messages if hasattr(meta, 'global_error_messages') else {}  # noqa: E503
-        self.validators = meta.validators if hasattr(meta, 'validators') else {}
-        self.soft_validators = meta.soft_validators if hasattr(meta, 'soft_validators') else {}
+        self.error_messages = {**meta.error_messages} if hasattr(meta, 'error_messages') else {}
+        self.global_error_messages = {**meta.global_error_messages} if hasattr(meta, 'global_error_messages') else {}  # noqa: E503
+        self.validators = {**meta.validators} if hasattr(meta, 'validators') else {}
+        self.soft_validators = {**meta.soft_validators} if hasattr(meta, 'soft_validators') else {}
 
         self.button_text = str(meta.button_text) if hasattr(meta, 'button_text') else 'Send'
 
-        self.i18n_phrases = meta.i18n_phrases if hasattr(meta, 'i18n_phrases') else {}
+        self.i18n_phrases = {**meta.i18n_phrases} if hasattr(meta, 'i18n_phrases') else {}
 
 
 class _EmptyMeta:
