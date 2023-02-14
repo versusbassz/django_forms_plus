@@ -21,15 +21,7 @@ export function build_validation_schema(spec) {
       case 'slug':
         base_type = string();
         rule = string();
-        if (field.validators && field.validators.length) {
-          field.validators.forEach((validator) => {
-            switch (validator.name) {
-              case 'max_length': rule = rule.max(validator.value); break;
-              case 'min_length': rule = rule.min(validator.value); break;
-              default: console.warn(`Unknown validator: ${validator.name} for field_name: ${name}`);
-            }
-          });
-        }
+        rule = applyValidators(rule, [name, field], spec);
         break;
       case 'email':
         base_type = string();
@@ -47,22 +39,8 @@ export function build_validation_schema(spec) {
       case 'image':
         base_type = mixed();
         rule = mixed();
-        field.validators.forEach(validator => {
-          const error_text = field.errors[validator.name];
-
-          switch (validator.name) {
-            case 'file_size':
-              rule = rule.test('file_size', error_text, get_file_size_validator(validator));
-              break;
-            case 'file_type':
-              rule = rule.test('file_type', error_text, get_file_type_validator(validator));
-              break;
-            default:
-              throw Error(`Unknown validator: ${validator?.name}`);
-          }
-        });
+        rule = applyValidators(rule, [name, field], spec);
         break;
-
       default:
         base_type = string();
         rule = string();
@@ -93,14 +71,41 @@ export function build_validation_schema(spec) {
   return object(items);
 }
 
+const applyValidators = (rule, [name, field], spec) => {
+  let _rule = rule;
+  field.validators.forEach(validator => {
+    const error_text = field.errors[validator.name];
+
+    switch (validator.type) {
+      case 'max_length':
+        _rule = _rule.max(validator.value);
+        break;
+      case 'min_length':
+        _rule = _rule.min(validator.value);
+        break;
+      case 'file_size':
+        _rule = _rule.test('file_size', error_text, get_file_size_validator(validator));
+        break;
+      case 'file_type':
+        _rule = _rule.test('file_type', error_text, get_file_type_validator(validator));
+        break;
+      default:
+        console.warn(`Unknown validator: ${validator.name} for field_name: ${name}`);
+        // throw Error(`Unknown validator: ${validator?.name}`); // TODO ???
+    }
+  });
+
+  return _rule;
+};
+
 const get_file_size_validator = (validator) => {
   return (value, context) => {
     if (! value?.length) {
       return true; // attachment is optional
     }
     return value[0].size <= validator.value;
-  }
-}
+  };
+};
 
 const get_file_type_validator = (validator) => {
   return (value, context) => {
