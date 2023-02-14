@@ -59,8 +59,6 @@ def get_form_spec(form: DjangoForm) -> FormState:
 
         # attrs
         field_spec['attrs'] = widget.attrs
-        # TODO transform maxlength -> validator and remove from attrs ???
-        # TODO transform minlength -> validator and remove from attrs ???
 
         # Validators
         field_spec['validators'] = []
