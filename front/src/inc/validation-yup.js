@@ -18,6 +18,7 @@ export function build_validation_schema(spec) {
 
     switch (field.type) {
       case 'text':
+      case 'slug':
         base_type = string();
         rule = string();
         if (field.validators && field.validators.length) {
