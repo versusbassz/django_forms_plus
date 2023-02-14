@@ -83,6 +83,9 @@ const applyValidators = (rule, [name, field], spec) => {
       case 'min_length':
         _rule = _rule.min(validator.value);
         break;
+      case 'regexp':
+        _rule = _rule.test(validator.name, validator.message, get_regexp_validator(validator));
+        break;
       case 'file_size':
         _rule = _rule.test('file_size', error_text, get_file_size_validator(validator));
         break;
@@ -96,6 +99,15 @@ const applyValidators = (rule, [name, field], spec) => {
   });
 
   return _rule;
+};
+
+const get_regexp_validator = (validator) => {
+  return (value, context) => {
+    const regexp = RegExp(validator.value);
+    const matches = regexp.exec(value) !== null;
+    const valid = validator.inverse ? ! matches : matches;
+    return valid;
+  };
 };
 
 const get_file_size_validator = (validator) => {

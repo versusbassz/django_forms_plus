@@ -94,7 +94,7 @@ function validate_soft_errors(name, field_spec, value) {
     const errors = [];
 
     for (const check of field_spec.soft_validators) {
-      switch (check.name) {
+      switch (check.type) {
         case 'required':
           ! value && errors.push(check.message)
           break;
@@ -105,7 +105,7 @@ function validate_soft_errors(name, field_spec, value) {
           is_err && errors.push(check.message);
           break;
         default:
-          console.warn(`Unknown validator: ${check.name}`);
+          console.warn(`Unknown validator: name:${check.name} type:${check.type}`);
           break;
       }
     }

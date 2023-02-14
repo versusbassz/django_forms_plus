@@ -67,19 +67,31 @@ def get_form_spec(form: DjangoForm) -> FormState:
         match field_name:
             case 'CharField':
                 if hasattr(field, 'max_length') and field.max_length:
-                    field_spec['validators'].append({'name': 'max_length',
+                    field_spec['validators'].append({'name': 'max_length', 'type': 'max_length',
                                                      'value': field.max_length})
                 if hasattr(field, 'min_length') and field.min_length:
-                    field_spec['validators'].append({'name': 'min_length',
+                    field_spec['validators'].append({'name': 'min_length', 'type': 'min_length',
                                                      'value': field.min_length})
-            case 'ImageField':
-                if has_custom_validators and name in helper.validators:
-                    for validator in helper.validators[name]:
-                        field_spec['validators'].append({'name': validator['name'],
-                                                         'value': validator['value']})
-                        # TODO move this error_messages logic to its main part
-                        error_value = get_error_message(name, validator['name'], helper, global_messages)
-                        field_spec['errors'][validator['name']] = str(error_value)
+
+        if has_custom_validators and name in helper.validators:
+            for validator in helper.validators[name]:
+                if validator['name'] == 'required':
+                    raise ValueError('"required" prop must not be set via DfpMeta.validators. '
+                                     'Set it on a Form\'s Field itself')
+
+                cur_validator = {
+                    'name': validator['name'],
+                    'type': validator['type'] if 'type' in validator else validator['name'],
+                    'value': validator['value'],
+                    'inverse': validator['inverse'] if 'inverse' in validator else False,
+                    'message': str(validator['message']) if 'message' in validator else None,
+                }
+                field_spec['validators'].append(cur_validator)
+
+                if cur_validator['message'] is None:
+                    # TODO move this error_messages logic to its main part
+                    error_value = get_error_message(name, validator['name'], helper, global_messages)
+                    field_spec['errors'][validator['name']] = str(error_value)
 
         # Soft validators
         field_spec['soft_validators'] = []
@@ -88,6 +100,7 @@ def get_form_spec(form: DjangoForm) -> FormState:
             for validator in helper.soft_validators[name]:
                 field_spec['soft_validators'].append({
                     'name': validator['name'],
+                    'type': validator['type'] if 'type' in validator else validator['name'],
                     'value': validator['value'] if 'value' in validator else None,
                     'inverse': validator['inverse'] if 'inverse' in validator else False,
                     'message': str(validator['message']),  # a message is required for now
