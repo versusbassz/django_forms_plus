@@ -23,8 +23,11 @@ def get_form_spec(form: DjangoForm) -> FormState:
     hidden_fields = []
     for name, bound_field in bound_fields.items():
         field = bound_field.field
+        field_name = field.dfp_field_name if hasattr(field, 'dfp_field_name') else type(field).__name__
+
         widget = bound_field.field.widget
-        widget_type = type(widget)
+        widget_name = widget.dfp_widget_name if hasattr(widget, 'dfp_widget_name') else type(widget).__name__
+
         field_spec = {
             'name': name,
             'label': str(field.label),
@@ -63,7 +66,6 @@ def get_form_spec(form: DjangoForm) -> FormState:
         # Validators
         field_spec['validators'] = []
         has_custom_validators = hasattr(helper, 'validators')
-        field_name = field.dfp_field_name if hasattr(field, 'dfp_field_name') else type(field).__name__
         match field_name:
             case 'CharField':
                 if hasattr(field, 'max_length') and field.max_length:
@@ -109,7 +111,6 @@ def get_form_spec(form: DjangoForm) -> FormState:
                 })
 
         # attr: type  + specific settings
-        widget_name = widget_type.__name__
         match widget_name:
             case 'SlugInput':
                 field_spec['type'] = 'slug'
@@ -151,7 +152,7 @@ def get_form_spec(form: DjangoForm) -> FormState:
                 field_spec['type'] = 'captcha'
                 default_initial = ''
             case _:
-                raise ValueError(f'Unknown widget type: {widget_type.__name__}')
+                raise ValueError(f'Unknown widget type: {widget_name}')
 
         # null is a bad initial value for react-hook-form
         # it consider an empty input with required=False as invalid if it has initial=null
@@ -216,6 +217,8 @@ def _get_fieldsets_spec(meta, fields_spec: dict) -> list:
 def _transform_fieldset_fields(fields: list) -> list:
     result = []
     for field in fields:
+        # TODO raise if field is not in fields list
+        #      it will require to transform get_form_spec() to a class
         if isinstance(field, LayoutItem):
             field_spec = field.to_spec()
         else:
