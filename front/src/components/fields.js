@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import classNames from "classnames";
+import { PatternFormat } from 'react-number-format';
 
 import { useFieldSpec } from "../inc/hooks";
 import { FormContext } from "../parts";
@@ -8,7 +9,11 @@ import { ImageUpload } from "./field-file";
 export const fieldspec_to_input = (name, field_spec) => {
   switch (field_spec.type) {
     case 'text':
-      return <InputText name={name} />;
+      if (field_spec?.input_format) {
+        return <MaskedInputText name={name} />;
+      } else {
+        return <InputText name={name} />;
+      }
     case 'slug':
       return <InputSlug name={name} />;
     case 'number':
@@ -60,9 +65,6 @@ const rhf_options = (field_spec, setFocusedField, trigger) => {
   return attrs;
 }
 
-/**
- *
- */
 const other_attrs = (field_spec, setFocusedField) => {
   const attrs = {
     ...field_spec.attrs,
@@ -99,7 +101,68 @@ function InputText({name}) {
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   return (
     <input type="text" {...rhf.register(name, rhf_options)} {...other_attrs} />
-  )
+  );
+}
+
+function MaskedInputText({name}) {
+  const [field_spec, _] = useFieldSpec(name);
+
+  const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
+  const rhf_props = rhf.register(name, rhf_options);
+
+  return (
+    <PatternFormat
+      format={field_spec.input_format}  // rfn, required
+      customInput={MaskedInnerInput} // rfn
+      // getInputRef={field.ref} // rfn  warning
+      // valueIsNumericString={true} // rfn
+
+      name={name}
+      value={rhf_options.value}
+
+      rhf_props={rhf_props}
+      other_props={other_attrs}
+    />
+  );
+}
+
+function MaskedInnerInput (props) {
+  const rhf_props = props.rhf_props;
+  const other_props = props.other_props;
+
+  const onFocus = e => {
+    props.onFocus(e);
+    other_props.onFocus(e);
+  };
+
+  const onBlur = e => {
+    props.onBlur(e);
+    rhf_props.onBlur(e);
+  };
+
+  const onChange = e => {
+    props.onChange(e);
+    rhf_props.onChange(e);
+  };
+
+  return (
+    <input
+      name={props.name}
+      type={props.type}
+      value={props.value} // ???
+      onFocus={onFocus}
+      onBlur={onBlur}
+      onChange={onChange}
+      onKeyDown={props.onKeyDown} // rfn
+      onMouseUp={props.onMouseUp} // rfn
+
+      disabled={rhf_props?.disabled}
+      ref={rhf_props.ref}
+
+      placeholder={other_props.placeholder}
+      readOnly={other_props?.readOnly}
+    />
+  );
 }
 
 function InputSlug({name}) {
