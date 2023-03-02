@@ -51,7 +51,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
 
   const context = {
     spec: spec,
-    rhf: { register, watch, trigger, formState, getFieldState, setValue, clearErrors },
+    rhf: { register, watch, trigger, control, formState, getFieldState, setValue, clearErrors },
     loading: loading,
     submitResult: submitResult,
     setSuccessMsg: setSuccessMsg,
