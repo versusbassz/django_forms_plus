@@ -103,6 +103,9 @@ const applyValidators = (rule, [name, field], spec) => {
 
 const get_regexp_validator = (validator) => {
   return (value, context) => {
+    if (validator.allow_empty && ! value) {
+      return true;
+    }
     const regexp = RegExp(validator.value);
     const matches = regexp.exec(value) !== null;
     const valid = validator.inverse ? ! matches : matches;

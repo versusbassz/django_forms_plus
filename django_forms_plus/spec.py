@@ -84,6 +84,7 @@ def get_form_spec(form: DjangoForm) -> FormState:
                     'type': validator['type'] if 'type' in validator else validator['name'],
                     'value': validator['value'],
                     'inverse': validator['inverse'] if 'inverse' in validator else False,
+                    'allow_empty': validator['allow_empty'] if 'allow_empty' in validator else False,
                     'message': str(validator['message']) if 'message' in validator else None,
                 }
                 field_spec['validators'].append(cur_validator)
@@ -103,6 +104,7 @@ def get_form_spec(form: DjangoForm) -> FormState:
                     'type': validator['type'] if 'type' in validator else validator['name'],
                     'value': validator['value'] if 'value' in validator else None,
                     'inverse': validator['inverse'] if 'inverse' in validator else False,
+                    'allow_empty': validator['allow_empty'] if 'allow_empty' in validator else False,
                     'message': str(validator['message']),  # a message is required for now
                 })
 
