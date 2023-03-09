@@ -126,6 +126,9 @@ def get_form_spec(form: DjangoForm) -> FormState:
             case 'EmailInput':
                 field_spec['type'] = 'email'
                 default_initial = ''
+            case 'DateInput':
+                field_spec['type'] = 'date'
+                default_initial = ''
             case 'Textarea':
                 field_spec['type'] = 'textarea'
                 default_initial = ''

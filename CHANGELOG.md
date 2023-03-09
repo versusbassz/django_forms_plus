@@ -3,6 +3,9 @@ Sections: Spec, Features, Backend, Frontend
 
 # The changelog
 
+## 0.5.0 - 2023.03.02
+- enhancement: Add "allow_empty" setting to regexp validators
+
 ## 0.4.0 - 2023.02.14
 
 Spec:

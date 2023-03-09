@@ -7,9 +7,12 @@ import { FormContext, build_validation_schema, submitForm } from '../parts';
 import { DebugPanel, SuccessMessage,
          InputHidden, Submit, SubmitIndicator,
          Fieldset, FieldsetFull, FieldsetSimple } from "../parts";
+import { i18n_phrases as default_i18n_phrases } from "../inc/i18n";
 
 export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) {
-  const validation_schema = build_validation_schema(spec);
+  const i18n_phrases = Object.keys(spec.i18n_phrases).length ? spec.i18n_phrases : default_i18n_phrases;
+
+  const validation_schema = build_validation_schema(spec, i18n_phrases);
   const {
     handleSubmit, reset, register, watch, control, setValue, trigger, formState, getFieldState,
     clearErrors,
@@ -64,7 +67,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
   const onSubmit = (data, e) => {
     submitForm(
       data, e, spec, context, reset, setValue,
-      setCommonErrors, setLoading, setSubmitResult,
+      setCommonErrors, setLoading, setSubmitResult, i18n_phrases,
     );
   }
 

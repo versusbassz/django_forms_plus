@@ -1,9 +1,14 @@
 import { object, string, number, boolean, mixed, setLocale } from 'yup';
+import * as dayjs from "dayjs";
+import customParseFormat from "dayjs/esm/plugin/customParseFormat";
 
 import { CSRF_TOKEN_NAME } from "./constants";
 import {collect_followed_fields, check_cl_state} from "./conditional-logic";
 
-export function build_validation_schema(spec) {
+dayjs.extend(customParseFormat);
+
+
+export function build_validation_schema(spec, i18n_phrases) {
   let cl_fields = spec?.conditional_logic?.rules ? spec.conditional_logic.rules : [];
 
   const items = {}
@@ -26,7 +31,11 @@ export function build_validation_schema(spec) {
       case 'email':
         base_type = string();
         rule = string();
-        rule = rule.email();
+        break;
+      case 'date':
+        base_type = string();
+        rule = string().nullable();
+        rule = rule.test('valid_date', i18n_phrases.invalid_date, validateDate);
         break;
       case 'number':
         base_type = number();
@@ -131,6 +140,24 @@ const get_file_type_validator = (validator) => {
     return validTypes.includes(value[0].type);
   };
 };
+
+const validateDate = (value, context) => {
+  return isDate(value);
+};
+
+/**
+ * @param {string} date
+ * @return {boolean}
+ *
+ * @see https://stackoverflow.com/a/25047903
+ */
+const isDate = function(date) {
+  if (! date?.length) {
+    return true;
+  }
+  const d = dayjs(date, 'DD.MM.YYYY', true);
+  return d.isValid();
+}
 
 function getIsFunc(cl_groups, followed_fields_list) {
   return (...args) => {

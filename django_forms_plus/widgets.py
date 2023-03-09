@@ -18,6 +18,22 @@ class SlugInput(forms.TextInput):
         self.suggestions = suggestions if suggestions is not None else []
 
 
+class FormattedInput(forms.TextInput):
+    dfp_widget_name = 'TextInput'
+
+    def __init__(self, input_format: str, attrs: dict | None = None):
+        self.input_format = input_format
+        super().__init__(attrs)
+
+
+class DateInput(forms.DateInput):
+    dfp_field = True
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.attrs['placeholder'] = '__.__.____'
+
+
 class CheckboxInput(forms.CheckboxInput):
     """
     Attributes:
