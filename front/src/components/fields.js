@@ -16,6 +16,8 @@ export const fieldspec_to_input = (name, field_spec) => {
       }
     case 'slug':
       return <InputSlug name={name} />;
+    case 'date':
+      return <InputDate name={name} />;
     case 'number':
       return <InputNumber name={name} />;
     case 'email':
@@ -104,7 +106,16 @@ function InputText({name}) {
   );
 }
 
-function MaskedInputText({name}) {
+function InputDate({name}) {
+  const rfn_props = {
+    format: '##.##.####',
+    mask: '_',
+    allowEmptyFormatting: false,
+  };
+  return <MaskedInputText name={name} rfn_props={rfn_props} />
+}
+
+function MaskedInputText({name, rfn_props = {}}) {
   const [field_spec, _] = useFieldSpec(name);
 
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
@@ -112,10 +123,12 @@ function MaskedInputText({name}) {
 
   return (
     <PatternFormat
-      format={field_spec.input_format}  // rfn, required
+      format={field_spec?.input_format}  // rfn, required
       customInput={MaskedInnerInput} // rfn
       // getInputRef={field.ref} // rfn  warning
       // valueIsNumericString={true} // rfn
+
+      {...rfn_props}
 
       name={name}
       value={rhf_options.value}
