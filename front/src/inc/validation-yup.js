@@ -3,7 +3,8 @@ import { object, string, number, boolean, mixed, setLocale } from 'yup';
 import { CSRF_TOKEN_NAME } from "./constants";
 import {collect_followed_fields, check_cl_state} from "./conditional-logic";
 
-export function build_validation_schema(spec) {
+
+export function build_validation_schema(spec, i18n_phrases) {
   let cl_fields = spec?.conditional_logic?.rules ? spec.conditional_logic.rules : [];
 
   const items = {}
