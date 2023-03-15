@@ -3,6 +3,16 @@ Sections: Spec, Features, Backend, Frontend
 
 # The changelog
 
+## 0.5.0 - 2023.03.15
+
+- new: Add masked input feature to TextInput widget
+- new: Add "date" (DateInput) field
+- enhancement: Add "allow_empty" setting to regexp validators
+
+Backend:
+- enhancement: Allow set a custom widget name via "dfp_widget_name" attribute
+- enhancement: Add FormattedInput widget
+
 ## 0.4.0 - 2023.02.14
 
 Spec:
