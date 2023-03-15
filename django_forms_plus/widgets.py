@@ -9,6 +9,14 @@ class CaptchaInput(DumbInput):
     pass
 
 
+class FormattedInput(forms.TextInput):
+    dfp_widget_name = 'TextInput'
+
+    def __init__(self, input_format: str, attrs: dict | None = None):
+        self.input_format = input_format
+        super().__init__(attrs)
+
+
 class SlugInput(forms.TextInput):
     dfp_field = True
 
