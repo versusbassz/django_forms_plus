@@ -48,6 +48,10 @@ def get_form_spec(form: DjangoForm) -> FormState:
         elif field.initial:
             field_spec['initial'] = field.initial
 
+        # hotfix for DateInput
+        if widget_name == 'DateInput':
+            field_spec['initial'] = widget.format_value(form.initial[name])
+
         # Error messages (i18n)
         # TODO unify the logic
         global_messages = get_global_error_messages()
