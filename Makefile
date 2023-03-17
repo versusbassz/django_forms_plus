@@ -36,6 +36,9 @@ front.gzip:
 	cd django_forms_plus/static/django_forms_plus; gzip -9 -k -c dfp.build.js > 9.gz
 
 # Backend (Python, Django)
+backend.lint:
+	ruff check .
+
 backend.run:
 	cd dev_site && ./manage.py runserver localhost:8001
 
