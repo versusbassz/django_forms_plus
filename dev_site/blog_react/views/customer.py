@@ -1,18 +1,16 @@
-import json
 from datetime import datetime
 
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpRequest, JsonResponse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from django import forms
 from django.shortcuts import reverse
 
-from django_forms_plus import (JsonFormResponse, FormResponseAction,
-                               SimpleDfpViewMixin, DfpViewMixin, EditDfpViewMixin,
-                               json_success_response, json_fail_response, FormResponseAction)
+from django_forms_plus import (
+    JsonFormResponse, DfpViewMixin,
+    json_success_response, json_fail_response,
+    FormResponseAction)
 from apex.models import Customer, PrivateData
 from ..misc import AddFormDebugForViewMixin
 from ..forms import CustomerAddForm, CustomerChangeCompositeForm
-
 
 
 __all__ = [
@@ -72,12 +70,17 @@ class CustomerChangeView(DfpViewMixin, AddFormDebugForViewMixin, UpdateView):
     def form_valid(self, form):
         for sub_form in form.sub_forms:
             sub_form.save()
-        return json_success_response(action=FormResponseAction(type='message', meta={
-            'message': f'Форма успешно отправлена - {datetime.utcnow()}'
-        }))
+        return json_success_response(
+            action=FormResponseAction(
+                type='message',
+                meta={
+                    'message': f'Форма успешно отправлена - {datetime.utcnow()}',  # noqa E501
+                },
+            ),
+        )
 
     def form_invalid(self, form):
-        form.errors = {'__all__': f'Something went wrong - {datetime.utcnow()}'}
+        form.errors = {'__all__': f'Something went wrong - {datetime.utcnow()}'}  # noqa E501
         return json_fail_response(form)
 
 

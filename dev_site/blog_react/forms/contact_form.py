@@ -1,8 +1,10 @@
 from django import forms
-from django.forms import ValidationError
 from django_forms_plus import DfpFormMixin, CaptchaInput, ExternalHtml
 
-from apex.misc import FailCaptchaMixin
+
+__all__ = [
+    'ContactsForm',
+]
 
 
 class ContactsForm(DfpFormMixin, forms.Form):
@@ -11,7 +13,6 @@ class ContactsForm(DfpFormMixin, forms.Form):
         help_text='Введите ваше имя',
         min_length=4,
         max_length=8,
-        # required=False,
     )
     email = forms.EmailField(
         required=False,

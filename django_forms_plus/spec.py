@@ -211,7 +211,7 @@ def _get_fieldsets_spec(meta, fields_spec: dict) -> list:
             if 'desc' in fieldset_spec:
                 fieldset['desc'] = fieldset_spec['desc']
             fieldset['fields'] = _transform_fieldset_fields(fieldset_spec['fields'])
-            fieldset['css_classes'] = fieldset_spec['css_classes'] if 'css_classes' in fieldset_spec else []  # noqa: E503
+            fieldset['css_classes'] = fieldset_spec['css_classes'] if 'css_classes' in fieldset_spec else []
             fieldsets.append(fieldset)
     else:
         fieldsets = [

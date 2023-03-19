@@ -7,6 +7,7 @@ from django_forms_plus import DfpFormMixin, CompositeForm
 __all__ = [
     'CustomerAddForm',
     'CustomerChangeForm',
+    'PrivateDataChangeForm',
     'CustomerChangeCompositeForm',
 ]
 

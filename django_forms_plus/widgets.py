@@ -20,7 +20,9 @@ class FormattedInput(forms.TextInput):
 class SlugInput(forms.TextInput):
     dfp_field = True
 
-    def __init__(self, prefix: str = '', suggestions: list | None = None, *args, **kwargs):
+    def __init__(self, prefix: str = '',
+                 suggestions: list | None = None,
+                 *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.prefix = prefix
         self.suggestions = suggestions if suggestions is not None else []
@@ -37,7 +39,8 @@ class DateInput(forms.DateInput):
 class CheckboxInput(forms.CheckboxInput):
     """
     Attributes:
-        label_hint - a text near the input (self.label is used in the text above the input)
+        label_hint - a text near the input
+                     (self.label is used in the text above the input)
     """
     dfp_field = True  # experimental, not used yet
 
@@ -53,7 +56,8 @@ class ClearableFileInput(forms.ClearableFileInput):
     """
     dfp_field = True
 
-    def __init__(self, clear_checkbox_label: str | None = None, *args, **kwargs):
+    def __init__(self, clear_checkbox_label: str | None = None,
+                 *args, **kwargs):
         super().__init__(*args, **kwargs)
         if clear_checkbox_label is not None:
             self.clear_checkbox_label = clear_checkbox_label
@@ -65,7 +69,8 @@ class CroppedImageInput(ClearableFileInput):
     """
     dfp_field = True
 
-    def __init__(self, expected_width: int, expected_height: int, *args, **kwargs):
+    def __init__(self, expected_width: int, expected_height: int,
+                 *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.expected_width = expected_width
         self.expected_height = expected_height

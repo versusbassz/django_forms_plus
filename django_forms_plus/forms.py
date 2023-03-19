@@ -1,5 +1,4 @@
 from copy import deepcopy
-from datetime import datetime
 
 from .views import get_form_layout
 from .form_helper import Helper
@@ -27,7 +26,8 @@ class _HtmlMixin:
 
 class DfpFormMixin(_HtmlMixin, _HelperMixin):
     def __str__(self):
-        raise RuntimeError('DONT print "django_forms_plus" forms directly! Use .html() method')
+        raise RuntimeError('DONT print "django_forms_plus" forms directly! '
+                           'Use .html() method')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -68,7 +68,7 @@ class CompositeForm(_HtmlMixin, _HelperMixin):
             raise ValueError('CompositeForm::forms_classes is not set up')
 
         # model instances
-        has_instance = 'instance' in _kwargs and _kwargs['instance'] is not None
+        has_instance = 'instance' in _kwargs and _kwargs['instance'] is not None  # noqa E501
         target_instance = _kwargs['instance'] if has_instance else None
         instances = self.get_instances(target_instance) if has_instance else {}
 
@@ -77,7 +77,8 @@ class CompositeForm(_HtmlMixin, _HelperMixin):
 
         # init sub_forms
         for prefix, form_class in self.forms_classes.items():
-            form = form_class(prefix=prefix, instance=instances[prefix], *args, **_kwargs)
+            form = form_class(prefix=prefix, instance=instances[prefix], 
+                              *args, **_kwargs)
             self.sub_forms.append(form)
 
         # merge necessary data from sub_forms
@@ -94,7 +95,7 @@ class CompositeForm(_HtmlMixin, _HelperMixin):
                     self.initial[key] = form.initial[name]
 
     def get_instances(self, target_instance):
-        raise NotImplemented('CompositeForm.get_instances() method must be implemented')
+        raise NotImplementedError('CompositeForm.get_instances() method must be implemented')  # noqa E501
 
     # html()
 

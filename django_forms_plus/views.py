@@ -17,7 +17,8 @@ def get_form_layout(form: DjangoForm, request: HttpRequest) -> str:
     return layout
 
 
-def get_form_layout_raw(form_state: FormState, csrf_token: str | None = None) -> str:
+def get_form_layout_raw(form_state: FormState,
+                        csrf_token: str | None = None) -> str:
     """Renders a form placeholder with all necessary data for its rendering"""
     form_state_json = form_state.json()
     _form_state = form_state_json
@@ -37,20 +38,21 @@ def get_form_layout_raw(form_state: FormState, csrf_token: str | None = None) ->
     </div>
 </div>
 
-"""
+"""  # noqa E501
     return mark_safe(layout)
 
 
 def _get_static_file_url(path: str):
     """
-    Fetches a URL of a static file from a configured "django.contrib.staticfiles" app.
+    Fetches a URL of a static file
+    from a configured "django.contrib.staticfiles" app.
     see: django.templatetags.static.StaticNode.handle_simple
     """
     if apps.is_installed("django.contrib.staticfiles"):
         return staticfiles_storage.url(path)
     else:
-        raise RuntimeError('The auto-loading of static files in "django_forms_plus" app depends on'
-                           ' "django.contrib.staticfiles" app. Please, enable and configure it.')
+        raise RuntimeError('The auto-loading of static files in "django_forms_plus" app depends on'  # noqa E501
+                           ' "django.contrib.staticfiles" app. Please, enable and configure it.')  # noqa E501
         # return urljoin(PrefixNode.handle_simple("STATIC_URL"), quote(path))
 
 

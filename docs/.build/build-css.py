@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 
 import yaml
@@ -42,11 +41,11 @@ def generate_code_schema(struct: list) -> str:
     def parse_item(item: dict, result: str):
         result += f"{SELECTOR_CLASS}{item['name']}"
         if 'modifiers' in item:
-            modifiers_str = ' '.join([f'{PREFIX_MOD}{m}' for m in item['modifiers']])
+            modifiers_str = ' '.join([f'{PREFIX_MOD}{m}' for m in item['modifiers']])  # noqa E501
             result += f'  {modifiers_str}'
         result += NEW_LINE
         if 'elements' in item:
-            result += ''.join([f'{TAB}{PREFIX_ELEM}{e}{NEW_LINE}' for e in item['elements']])
+            result += ''.join([f'{TAB}{PREFIX_ELEM}{e}{NEW_LINE}' for e in item['elements']])  # noqa E501
         result += NEW_LINE
         return result
 
@@ -61,9 +60,9 @@ def generate_code_css(struct: list) -> str:
         block_name = item['name']
         result += f"{SELECTOR_CLASS}{block_name} {BRACES}{NEW_LINE}"
         if 'modifiers' in item:
-            result += ''.join([f'{SELECTOR_CLASS}{block_name}{PREFIX_MOD}{m} {BRACES}{NEW_LINE}' for m in item['modifiers']])
+            result += ''.join([f'{SELECTOR_CLASS}{block_name}{PREFIX_MOD}{m} {BRACES}{NEW_LINE}' for m in item['modifiers']])  # noqa E501
         if 'elements' in item:
-            result += ''.join([f'{SELECTOR_CLASS}{block_name}{PREFIX_ELEM}{e} {BRACES}{NEW_LINE}' for e in item['elements']])
+            result += ''.join([f'{SELECTOR_CLASS}{block_name}{PREFIX_ELEM}{e} {BRACES}{NEW_LINE}' for e in item['elements']])  # noqa E501
         result += NEW_LINE
         return result
 
@@ -77,9 +76,9 @@ def generate_code_scss(struct: list) -> str:
     def parse_item(item: dict, result: str):
         result += f"{SELECTOR_CLASS}{item['name']} {BRACE_OPEN}{NEW_LINE}"
         if 'modifiers' in item:
-            result += ''.join([f'{TAB}&{PREFIX_MOD}{m} {BRACES}{NEW_LINE}' for m in item['modifiers']])
+            result += ''.join([f'{TAB}&{PREFIX_MOD}{m} {BRACES}{NEW_LINE}' for m in item['modifiers']])  # noqa E501
         if 'elements' in item:
-            result += ''.join([f'{TAB}&{PREFIX_ELEM}{e} {BRACES}{NEW_LINE}' for e in item['elements']])
+            result += ''.join([f'{TAB}&{PREFIX_ELEM}{e} {BRACES}{NEW_LINE}' for e in item['elements']])  # noqa E501
         result += f'{BRACE_CLOSE}{NEW_LINE}{NEW_LINE}'
         return result
 

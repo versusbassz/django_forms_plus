@@ -1,13 +1,11 @@
-import json
 from datetime import datetime
 
-from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.shortcuts import reverse, render
+from django.http import HttpRequest, JsonResponse
 from django.views.generic import FormView
 
-from django_forms_plus import (get_form_spec, get_form_layout,
-                               JsonFormResponse, FormResponseAction, DfpViewMixin,
-                               json_success_response, json_fail_response, message_result_action)
+from django_forms_plus import (
+    DfpViewMixin,
+    json_success_response, json_fail_response, message_result_action)
 from ..forms import ContactsForm
 from ..misc import AddFormDebugForViewMixin
 

@@ -1,13 +1,12 @@
-import json
 from datetime import datetime
 
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpRequest, JsonResponse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django import forms
 from django.shortcuts import reverse
 
 from django_forms_plus import (JsonFormResponse, FormResponseAction,
-                               SimpleDfpViewMixin, DfpViewMixin, EditDfpViewMixin)
+                               DfpViewMixin)
 from apex.models import Profile
 from ..misc import AddFormDebugForViewMixin
 from ..forms import ProfileAddForm, ProfileChangeForm
