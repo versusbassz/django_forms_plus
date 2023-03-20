@@ -20,12 +20,13 @@ __all__ = [
 
 
 def json_success_response(
-    payload: dict = None,
-    action: FormResponseAction = None,
+    payload: dict | None = None,
+    action: FormResponseAction | None = None,
 ) -> JsonResponse:
+    _payload = {} if payload is None else payload
     return JsonResponse(JsonFormResponse(
         status='success',
-        payload=payload,
+        payload=_payload,
         result_action=action,
     ).dict())
 
@@ -33,11 +34,12 @@ def json_success_response(
 def json_success_modelform_response(
     form: forms.BaseForm,
     instance: models.Model,
-    payload: dict = None,
-    action: FormResponseAction = None,
+    payload: dict | None = None,
+    action: FormResponseAction | None = None,
 ) -> JsonResponse:
+    payload2iter = {} if payload is None else payload
     _payload = {}
-    for key, value in payload.items():
+    for key, value in payload2iter.items():
         if isinstance(form.fields[key].widget, forms.FileInput):
             if isinstance(value, File):
                 _payload[key] = transform_image_field_file(getattr(instance, key))
@@ -59,7 +61,7 @@ def json_fail_response(
     ).dict())
 
 
-def message_result_action(msg: str, meta: dict = None):
+def message_result_action(msg: str, meta: dict | None = None):
     _meta = {} if meta is None else meta
     _meta.update({'message': msg})
     return FormResponseAction(type='message', meta=_meta)

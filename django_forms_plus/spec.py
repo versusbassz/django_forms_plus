@@ -1,11 +1,13 @@
+from typing import Any
+
 from django.db.models.fields.files import ImageFieldFile
 
-from .types import DjangoForm, FormState, FormSpec, FormData
+from .types import FormWithHelper, FormState, FormSpec, FormData
 from .errors import get_global_error_messages, get_error_message
 from .layout import LayoutItem
 
 
-def get_form_spec(form: DjangoForm) -> FormState:
+def get_form_spec(form: FormWithHelper) -> FormState:
     if form.helper.spec is not None:  # caching
         # TODO probably, it's better to move the building logic
         #      to a separate build_form_spec() function and keep caching logic here
@@ -28,7 +30,7 @@ def get_form_spec(form: DjangoForm) -> FormState:
         widget = bound_field.field.widget
         widget_name = widget.dfp_widget_name if hasattr(widget, 'dfp_widget_name') else type(widget).__name__
 
-        field_spec = {
+        field_spec: dict[str, Any] = {  # TODO add more explicit typing
             'name': name,
             'label': str(field.label),
             'help_text': str(field.help_text),
@@ -188,7 +190,7 @@ def get_form_spec(form: DjangoForm) -> FormState:
         i18n_phrases=helper.i18n_phrases,
     )
 
-    value = {}  # TODO remove ???
+    value: dict[Any, Any] = {}  # TODO remove ???
     data = FormData(value=value)  # TODO remove ???
 
     form_state = FormState(

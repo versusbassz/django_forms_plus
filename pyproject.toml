@@ -34,6 +34,8 @@ django-extensions = "^3.2.1"
 mkdocs = "^1.4.2"
 PyYAML = "^6.0"
 ruff = "^0.0.256"
+mypy = "^1.1.1"
+django-stubs = {extras = ["compatible-mypy"], version = "^1.16.0"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -41,3 +43,15 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 120
+
+[tool.mypy]
+mypy_path = "./dev_site"
+plugins = ["mypy_django_plugin.main"]
+implicit_reexport = true
+
+[[tool.mypy.overrides]]
+module = "django.*"
+implicit_reexport = true
+
+[tool.django-stubs]
+django_settings_module = "mysite.settings"

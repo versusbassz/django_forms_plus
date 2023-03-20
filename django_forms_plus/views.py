@@ -1,16 +1,16 @@
 from django.apps import apps
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from django.middleware.csrf import get_token
 from django.views.generic.edit import FormMixin
 from django.utils.html import mark_safe
 
 from django.contrib.staticfiles.storage import staticfiles_storage
 
-from .types import DjangoForm, FormState
+from .types import FormWithHelper, FormState
 from .spec import get_form_spec
 
 
-def get_form_layout(form: DjangoForm, request: HttpRequest) -> str:
+def get_form_layout(form: FormWithHelper, request: HttpRequest) -> str:
     form_state = get_form_spec(form)
     csrf_token = get_token(request)
     layout = get_form_layout_raw(form_state, csrf_token)
@@ -88,6 +88,11 @@ class EditDfpViewMixin(AttachRequestToFormMixin):
 
 
 class DfpViewMixin(SimpleDfpViewMixin, FormMixin):
-    form_valid = None
-    form_invalid = None
-    get_success_url = None
+    def form_valid(self, form) -> HttpResponse:
+        raise NotImplementedError
+
+    def form_invalid(self, form) -> HttpResponse:
+        raise NotImplementedError
+
+    def get_success_url(self) -> str:
+        raise NotImplementedError

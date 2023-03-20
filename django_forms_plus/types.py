@@ -1,10 +1,14 @@
-from typing import Union
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .form_helper import Helper
 
 from pydantic import BaseModel
 from django import forms
 
 
-DjangoForm = Union[forms.Form, forms.ModelForm]
+class FormWithHelper(forms.BaseForm):
+    helper: Helper
 
 
 class FormSpec(BaseModel):

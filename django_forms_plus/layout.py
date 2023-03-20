@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 __all__ = [
@@ -8,7 +8,9 @@ __all__ = [
 
 
 class LayoutItem(ABC):
-    pass
+    @abstractmethod
+    def to_spec(self) -> dict:
+        pass
 
 
 class ExternalHtml(LayoutItem):

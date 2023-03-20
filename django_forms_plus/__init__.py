@@ -1,5 +1,5 @@
 # ruff: noqa: F401
-from .types import (FormSpec, FormState, FormData, DjangoForm,
+from .types import (FormSpec, FormState, FormData, FormWithHelper,
                     JsonFormResponse, FormResponseAction)
 from .widgets import DumbInput, CaptchaInput
 from .spec import get_form_spec
