@@ -66,6 +66,10 @@ export function FieldSlot({ name }) {
       'dfp-fieldslot--softly-invalid': show_soft_errors,
   }
 
+  if (field_spec.css_classes?.fieldslot) {
+    css_classes[field_spec.css_classes?.fieldslot] = true;
+  }
+
   return (
     <div className={classNames(css_classes)}>
       {field_spec.label ? <div className="dfp-fieldslot__title">{field_spec.label}</div> : null}

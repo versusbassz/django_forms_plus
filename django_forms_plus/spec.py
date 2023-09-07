@@ -117,6 +117,12 @@ def get_form_spec(form: DjangoForm) -> FormState:
                     'message': str(validator['message']),  # a message is required for now
                 })
 
+        # attr: css_classes
+        if hasattr(widget, 'css_classes') and isinstance(widget.css_classes, dict):
+            field_spec['css_classes'] = widget.css_classes
+        else:
+            field_spec['css_classes'] = {}
+
         # attr: type  + specific settings
         match widget_name:
             case 'SlugInput':

@@ -1,7 +1,13 @@
 from django import forms
 
 
-class DumbInput(forms.TextInput):
+class DfpInputMixin:
+    def __init__(self, css_classes: dict | None = None, *args, **kwargs) -> None:
+        self.css_classes = css_classes
+        super().__init__(*args, **kwargs)
+
+
+class DumbInput(DfpInputMixin, forms.TextInput):
     pass
 
 
@@ -9,7 +15,7 @@ class CaptchaInput(DumbInput):
     pass
 
 
-class FormattedInput(forms.TextInput):
+class FormattedInput(DfpInputMixin, forms.TextInput):
     dfp_widget_name = 'TextInput'
 
     def __init__(self, input_format: str, attrs: dict | None = None):
@@ -17,7 +23,7 @@ class FormattedInput(forms.TextInput):
         super().__init__(attrs)
 
 
-class SlugInput(forms.TextInput):
+class SlugInput(DfpInputMixin, forms.TextInput):
     dfp_field = True
 
     def __init__(self, prefix: str = '',
@@ -28,7 +34,7 @@ class SlugInput(forms.TextInput):
         self.suggestions = suggestions if suggestions is not None else []
 
 
-class DateInput(forms.DateInput):
+class DateInput(DfpInputMixin, forms.DateInput):
     dfp_field = True
 
     def __init__(self, *args, **kwargs):
@@ -36,7 +42,7 @@ class DateInput(forms.DateInput):
         self.attrs['placeholder'] = '__.__.____'
 
 
-class CheckboxInput(forms.CheckboxInput):
+class CheckboxInput(DfpInputMixin, forms.CheckboxInput):
     """
     Attributes:
         label_hint - a text near the input
@@ -49,7 +55,7 @@ class CheckboxInput(forms.CheckboxInput):
         self.label_hint = label_hint if label_hint else ''
 
 
-class ClearableFileInput(forms.ClearableFileInput):
+class ClearableFileInput(DfpInputMixin, forms.ClearableFileInput):
     """
     Allows set clear_checkbox_label in the constructor.
     The original parent class uses a static attribute.
@@ -65,7 +71,7 @@ class ClearableFileInput(forms.ClearableFileInput):
 
 class CroppedImageInput(ClearableFileInput):
     """
-    Allows set expected width/height of a image.
+    Allows set expected width/height of an image.
     """
     def __init__(self, expected_width: int, expected_height: int,
                  *args, **kwargs):
