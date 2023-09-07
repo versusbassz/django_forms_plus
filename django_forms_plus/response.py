@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from django.db import models
 
+import datetime
+
 from django.http import JsonResponse
 from django import forms
 from django.core.files import File
@@ -37,19 +39,36 @@ def json_success_modelform_response(
     payload: dict | None = None,
     action: FormResponseAction | None = None,
 ) -> JsonResponse:
+    """
+    TODO probably it's better to remove "payload" param completely and only build a payload from form.cleaned_data
+    """
     _payload = {}
-    if payload is not None:
-        for key, value in payload.items():
-            if isinstance(form.fields[key].widget, forms.FileInput):
+    if payload is None:
+        for key, value in form.cleaned_data.items():
+            widget = form.fields[key].widget
+            if isinstance(widget, forms.FileInput):
                 if isinstance(value, File):
                     _payload[key] = transform_image_field_file(getattr(instance, key))
                 else:
                     _payload[key] = transform_image_field_file(None)
-    return JsonResponse(JsonFormResponse(
+            elif isinstance(widget, forms.DateInput) and isinstance(value, datetime.date):
+                # value is datetime.date for
+                date_format = widget.format
+                if date_format is None:
+                    _payload[key] = str(value)
+                else:
+                    _payload[key] = value.strftime(date_format)
+            else:
+                _payload[key] = value
+    else:
+        _payload = payload.copy()
+
+    form_response = JsonFormResponse(
         status='success',
         payload=_payload,
         result_action=action,
-    ).dict())
+    )
+    return JsonResponse(form_response.dict())
 
 
 def json_fail_response(
