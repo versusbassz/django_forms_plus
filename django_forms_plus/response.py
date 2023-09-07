@@ -20,14 +20,15 @@ __all__ = [
 
 
 def json_success_response(
-    payload: dict = None,
-    action: FormResponseAction = None,
+    payload: dict | None = None,
+    action: FormResponseAction | None = None,
 ) -> JsonResponse:
-    return JsonResponse(JsonFormResponse(
+    form_response = JsonFormResponse(
         status='success',
         payload=payload,
         result_action=action,
-    ).dict())
+    )
+    return JsonResponse(form_response.dict())
 
 
 def json_success_modelform_response(
