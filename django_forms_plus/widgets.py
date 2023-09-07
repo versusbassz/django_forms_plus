@@ -67,8 +67,6 @@ class CroppedImageInput(ClearableFileInput):
     """
     Allows set expected width/height of a image.
     """
-    dfp_field = True
-
     def __init__(self, expected_width: int, expected_height: int,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
