@@ -33,16 +33,17 @@ def json_success_response(
 def json_success_modelform_response(
     form: forms.BaseForm,
     instance: models.Model,
-    payload: dict = None,
-    action: FormResponseAction = None,
+    payload: dict | None = None,
+    action: FormResponseAction | None = None,
 ) -> JsonResponse:
     _payload = {}
-    for key, value in payload.items():
-        if isinstance(form.fields[key].widget, forms.FileInput):
-            if isinstance(value, File):
-                _payload[key] = transform_image_field_file(getattr(instance, key))
-            else:
-                _payload[key] = transform_image_field_file(None)
+    if payload is not None:
+        for key, value in payload.items():
+            if isinstance(form.fields[key].widget, forms.FileInput):
+                if isinstance(value, File):
+                    _payload[key] = transform_image_field_file(getattr(instance, key))
+                else:
+                    _payload[key] = transform_image_field_file(None)
     return JsonResponse(JsonFormResponse(
         status='success',
         payload=_payload,
