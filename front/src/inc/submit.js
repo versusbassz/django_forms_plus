@@ -59,7 +59,8 @@ export async function submitForm(data, e, { fields, i18n_phrases }, context, res
           setValue(key, value, { shouldValidate: true });
         });
       } else {
-        reset();
+        // should we really reset if a payload is an empty object ???
+        // reset();
       }
       setSubmitResult(response?.payload)
       setCommonErrors([]);
