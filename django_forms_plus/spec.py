@@ -207,7 +207,7 @@ def _get_fieldsets_spec(meta, fields_spec: dict) -> list:
         for fieldset_spec in meta.fieldsets:
             fieldset = {}
             if 'title' in fieldset_spec:
-                fieldset['title'] = fieldset_spec['title']
+                fieldset['title'] = str(fieldset_spec['title'])
             if 'desc' in fieldset_spec:
                 fieldset['desc'] = fieldset_spec['desc']
             fieldset['fields'] = _transform_fieldset_fields(fieldset_spec['fields'])
