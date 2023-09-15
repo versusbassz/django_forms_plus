@@ -1,3 +1,7 @@
+"""
+dfp_field = True  is experimental, not used yet
+"""
+
 from django import forms
 
 
@@ -16,6 +20,7 @@ class CaptchaInput(DumbInput):
 
 
 class FormattedInput(DfpInputMixin, forms.TextInput):
+    dfp_field = True
     dfp_widget_name = 'TextInput'
 
     def __init__(self, input_format: str, attrs: dict | None = None):
@@ -48,7 +53,7 @@ class CheckboxInput(DfpInputMixin, forms.CheckboxInput):
         label_hint - a text near the input
                      (self.label is used in the text above the input)
     """
-    dfp_field = True  # experimental, not used yet
+    dfp_field = True
 
     def __init__(self, label_hint=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
