@@ -234,22 +234,22 @@ function InputEmail({name}) {
 }
 
 export function InputHidden({name}) {
-   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
+  const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   return (
     <input type="hidden" {...rhf.register(name, rhf_options)} {...other_attrs} />
   )
 }
 
 function Textarea({name}) {
- const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
+  const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   return (
     <textarea {...rhf.register(name, rhf_options)} {...other_attrs} />
   )
 }
 
 function InputCheckbox({name}) {
-   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
-   const [field_spec, _] = useFieldSpec(name);
+  const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
+  const [field_spec, _] = useFieldSpec(name);
   return (
     <div className="form-check">
       <input type="checkbox" id={name} {...rhf.register(name, rhf_options)} {...other_attrs} />
