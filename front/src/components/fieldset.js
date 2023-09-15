@@ -28,7 +28,7 @@ export function Fieldset({index}) {
     <FieldsetFull
       title={fieldset_spec.title}
       desc={fieldset_spec.desc}
-      css_classes={fieldset_spec?.css_classes}
+      css_classes={classNames(fieldset_spec?.css_classes)}
     >
       {fieldset_spec.fields.map(mapFieldsetItem)}
     </FieldsetFull>
