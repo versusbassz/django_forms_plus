@@ -26,6 +26,8 @@ export const fieldspec_to_input = (name, field_spec) => {
       return <Textarea name={name} />;
     case 'checkbox':
       return <InputCheckbox name={name} />;
+    case 'select':
+      return <Select name={name} />;
     case 'image':
       return <ImageUpload name={name} />;
     case 'hidden':
@@ -255,6 +257,19 @@ function InputCheckbox({name}) {
     </div>
   )
 }
+
+function Select({name}) {
+  const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
+  const [field_spec, _] = useFieldSpec(name);
+  return (
+    <select {...rhf.register(name, rhf_options)} {...other_attrs}>
+      {field_spec.choices.map((item, index) => {
+        return <option value={item[0]} key={index}>{item[1]}</option>;
+      })}
+    </select>
+  )
+}
+
 
 export function Submit({button_text}) {
   const { loading } = useContext(FormContext);

@@ -153,6 +153,9 @@ def get_form_spec(form: DjangoForm) -> FormState:
                 # TODO widget.attrs['checked'] (bool) ??? but initial is enough basically
             case 'HiddenInput':
                 field_spec['type'] = 'hidden'
+            case 'Select':
+                field_spec['type'] = 'select'
+                field_spec['choices'] = widget.choices
             case 'ClearableFileInput':
                 field_spec['type'] = 'image'
                 field_spec['checkbox_name'] = widget.clear_checkbox_name(name)

@@ -55,6 +55,11 @@ class CheckboxInput(DfpInputMixin, forms.CheckboxInput):
         self.label_hint = label_hint if label_hint else ''
 
 
+class Select(DfpInputMixin, forms.Select):
+    dfp_field = True
+    pass
+
+
 class ClearableFileInput(DfpInputMixin, forms.ClearableFileInput):
     """
     Allows set clear_checkbox_label in the constructor.
