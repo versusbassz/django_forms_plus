@@ -3,6 +3,16 @@ Sections: Spec, Features, Backend, Frontend
 
 # The changelog
 
+## 0.6.0 - 2023.09.20
+
+new: Add support for django.forms.Select widget
+new: Add "additional custom CSS-classes in widget" feature
+
+bc, js: Don't do reset() if a form gets an empty payload in a response (for now)
+
+fix: Several bug fixes
+dev: Add "ruff" linter
+
 ## 0.5.0 - 2023.03.15
 
 - new: Add masked input feature to TextInput widget
