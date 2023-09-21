@@ -3,6 +3,13 @@ Sections: Spec, Features, Backend, Frontend
 
 # The changelog
 
+## 0.7.0 - 2023.09.21
+
+new, js: Add window.dfp global variable
+new, js: Add "dfp:init" JS event
+new, js: Add "dfp:onsubmit" JS event
+enhancement, js: Add "position" setting to "success message"
+
 ## 0.6.0 - 2023.09.20
 
 new: Add support for django.forms.Select widget
