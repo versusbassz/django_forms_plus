@@ -49,6 +49,16 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
     window.dfp.forms[spec.id].context = context;
   }, []);
 
+  // emit "dfp:init" event
+  useEffect(() => {
+    const event = new CustomEvent('dfp:init', {
+      detail: {
+        form_id: spec.id,
+      },
+    });
+    document.dispatchEvent(event);
+  }, []);
+
   const [debugEnabled, setDebugEnabled] = useState(debug_enabled);
 
   useEffect(() => {
