@@ -44,6 +44,11 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
     }
   }, []);
 
+  // add the context to window.dfp
+  useEffect(() => {
+    window.dfp.forms[spec.id].context = context;
+  }, []);
+
   const [debugEnabled, setDebugEnabled] = useState(debug_enabled);
 
   useEffect(() => {

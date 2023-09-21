@@ -13,6 +13,12 @@ import { Form } from "../parts";
 export function dfp_init_forms(devtool) {
   const form_containers = document.querySelectorAll('.js-dj-form-wrapper')
 
+  // todo avoid multiple invocations
+
+  window.dfp = {
+    forms: {},
+  };
+
   form_containers.forEach(($wrapper) => {
     const $form = $wrapper.querySelector('.js-dj-form')
 
@@ -20,6 +26,10 @@ export function dfp_init_forms(devtool) {
     const form_state = JSON.parse(form_state_raw.innerHTML)
 
     const csrf_token = $wrapper.querySelector('.js-csrf-token').innerHTML
+    
+    window.dfp.forms[form_state.spec.id] = {
+      backendInitial: {...form_state},
+    }
 
     dfp_render_form($form, form_state, csrf_token, devtool)
   });
