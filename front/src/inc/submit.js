@@ -17,6 +17,9 @@ export async function submitForm(data, e, { fields, i18n_phrases }, context, res
   context.closeSuccessMsg();
 
   setLoading(true);
+
+  emit_onsubmit_event(spec.id);
+
   const response_raw = await fetch(spec.action, {
     method: spec.method,
     headers: {
@@ -97,4 +100,11 @@ function do_action(response, form_context) {
       console.log('ACTION: MESSAGE')
       form_context.setSuccessMsg(action?.meta?.message)
   }
+}
+
+function emit_onsubmit_event(form_id) {
+  const event = new CustomEvent('dfp:onsubmit', {
+      detail: {form_id},
+    });
+  document.dispatchEvent(event);
 }
