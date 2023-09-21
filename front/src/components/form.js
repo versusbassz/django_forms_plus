@@ -20,9 +20,13 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
     resolver: yupResolver(validation_schema),
   });
 
-  const [ successMsg, setSuccessMsg ] = useState('');
+  const [ successMsg, _setSuccessMsg ] = useState(null);
+  const setSuccessMsg = (content, position = 'bottom') => {
+    _setSuccessMsg({content, position});
+  };
+  const closeSuccessMsg = () => _setSuccessMsg(null);
+
   const [ commonErrors, setCommonErrors ] = useState([]);
-  const closeSuccessMsg = () => setSuccessMsg('');
 
   const [loading, setLoading] = useState(false);
   const [submitResult, setSubmitResult] = useState();
@@ -72,7 +76,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
     rhf: { register, watch, trigger, control, formState, getFieldState, setValue, clearErrors },
     loading: loading,
     submitResult: submitResult,
-    setSuccessMsg: setSuccessMsg,
+    setSuccessMsg, closeSuccessMsg,
     focusedField: focusedField, setFocusedField: setFocusedField,
     validateOnStart: validateOnStart,
     debugEnabled: debugEnabled,
@@ -105,6 +109,13 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
               })}
             </div>
 
+            {/* "Success" message - top */}
+            {successMsg && successMsg.position === 'top' && (
+              <FieldsetSimple>
+                <SuccessMessage content={successMsg.content} close={closeSuccessMsg} />
+              </FieldsetSimple>
+            )}
+
             {/* Fieldsets */}
             {fieldsets.map((_, index) => {
                 return <Fieldset key={index} index={index} />
@@ -122,10 +133,10 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
             {/* Submit indicator */}
             {loading && <SubmitIndicator />}
 
-            {/* "Success" message */}
-            {successMsg && (
+            {/* "Success" message - bottom */}
+            {successMsg && successMsg.position === 'bottom' && (
               <FieldsetSimple>
-                <SuccessMessage content={successMsg} close={closeSuccessMsg} />
+                <SuccessMessage content={successMsg.content} close={closeSuccessMsg} />
               </FieldsetSimple>
             )}
 

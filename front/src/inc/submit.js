@@ -14,7 +14,7 @@ export async function submitForm(data, e, { fields, i18n_phrases }, context, res
   console.log('rhf_data:', data);
   console.table(Object.fromEntries(form_data));
 
-  context.setSuccessMsg('');
+  context.closeSuccessMsg();
 
   setLoading(true);
   const response_raw = await fetch(spec.action, {
