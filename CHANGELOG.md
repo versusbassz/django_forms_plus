@@ -3,6 +3,11 @@ Sections: Spec, Features, Backend, Frontend
 
 # The changelog
 
+## 0.8.0 - 2023.10.27
+
+new: Add support for `django.forms.URLInput` widget
+bc, enhancement: Disable browser native form validation (form attr:novalidate=true)
+
 ## 0.7.0 - 2023.09.21
 
 new, js: Add window.dfp global variable
