@@ -16,6 +16,8 @@ export const fieldspec_to_input = (name, field_spec) => {
       }
     case 'slug':
       return <InputSlug name={name} />;
+    case 'url':
+      return <InputURL name={name} />;
     case 'date':
       return <InputDate name={name} />;
     case 'number':
@@ -217,6 +219,13 @@ function InputSlug({name}) {
 
     </div>
   )
+}
+
+function InputURL({name}) {
+  const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
+  return (
+    <input type="url" {...rhf.register(name, rhf_options)} {...other_attrs} />
+  );
 }
 
 function InputNumber({name}) {

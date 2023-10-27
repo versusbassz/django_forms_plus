@@ -27,6 +27,11 @@ export function build_validation_schema(spec, i18n_phrases) {
         rule = string();
         rule = applyValidators(rule, [name, field], spec);
         break;
+      case 'url':
+        base_type = string();
+        rule = string().url(i18n_phrases.invalid_url);
+        rule = applyValidators(rule, [name, field], spec);
+        break;
       case 'email':
         base_type = string();
         rule = string().email();

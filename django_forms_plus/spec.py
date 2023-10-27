@@ -134,6 +134,9 @@ def get_form_spec(form: DjangoForm) -> FormState:
                 field_spec['type'] = 'text'
                 field_spec['input_format'] = widget.input_format if hasattr(widget, 'input_format') else ''
                 default_initial = ''
+            case 'URLInput':
+                field_spec['type'] = 'url'
+                default_initial = ''
             case 'NumberInput':
                 field_spec['type'] = 'number'
             case 'EmailInput':
