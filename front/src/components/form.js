@@ -98,6 +98,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
         <form className="dfp-form__tag"
               action={spec.action} method={spec.method} encType={spec.enctype}
               onSubmit={handleSubmit(onSubmit)}
+              noValidate={true}
         >
           <div className="dfp-form__inner">
 
