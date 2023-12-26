@@ -1,5 +1,5 @@
-export const fieldHasCL = (spec, name) => spec?.conditional_logic?.rules && !! spec.conditional_logic.rules[name];
-export const getFieldClGroups = (spec, name) => fieldHasCL(spec, name) ? spec?.conditional_logic?.rules[name] : [];
+export const fieldHasCL = (spec, name) => spec?.conditional_logic && !! spec.conditional_logic[name];
+export const getFieldClGroups = (spec, name) => fieldHasCL(spec, name) ? spec.conditional_logic[name] : [];
 
 export function collect_followed_fields(groups) {
   let followed_fields = {};
