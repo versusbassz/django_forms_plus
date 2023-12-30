@@ -32,4 +32,45 @@ class DfpMeta:
             ],
         ],
     }
+
+    fieldsets = [
+        {
+            'title': 'Section title',
+            'fields': ['field_2', 'field_3'],
+            'conditional_logic': [
+                [
+                    {
+                        'field': 'field_1',
+                        'operator': 'equal',
+                        'operator': 'value_1',
+                    },
+                ],
+            ],
+        },
+    ]
+```
+
+## Operators
+
+```python
+[
+    # checked
+    {
+        'field': 'my_field',
+        'operator': 'checked',
+    },
+    
+    # non_checked
+    {
+        'field': 'my_field',
+        'operator': 'non_checked',
+    },
+    
+    # equal
+    {
+        'field': 'my_field',
+        'operator': 'equal',
+        'value': 'any_exact_value'
+    },
+]
 ```

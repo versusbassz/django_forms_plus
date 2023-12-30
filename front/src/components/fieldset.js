@@ -24,6 +24,9 @@ const mapFieldsetItem = (item, index) => {
 export function Fieldset({index}) {
   const {spec} = useContext(FormContext);
   const fieldset_spec = spec.fieldsets[index];
+  const cl = fieldset_spec?.conditional_logic;
+  console.log(index, cl);
+
   return (
     <FieldsetFull
       title={fieldset_spec.title}

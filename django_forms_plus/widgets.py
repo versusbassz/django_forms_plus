@@ -55,6 +55,10 @@ class Select(DfpInputMixin, forms.Select):
     pass
 
 
+class RadioSelect(DfpInputMixin, forms.RadioSelect):
+    pass
+
+
 class ClearableFileInput(DfpInputMixin, forms.ClearableFileInput):
     """
     Allows set clear_checkbox_label in the constructor.
