@@ -21,6 +21,10 @@ class FormattedInput(DfpInputMixin, forms.TextInput):
         super().__init__(attrs)
 
 
+class PositiveNumberInput(DfpInputMixin, forms.TextInput):
+    pass
+
+
 class SlugInput(DfpInputMixin, forms.TextInput):
     def __init__(self, prefix: str = '',
                  suggestions: list | None = None,

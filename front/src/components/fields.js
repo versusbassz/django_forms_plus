@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import classNames from "classnames";
-import { PatternFormat } from 'react-number-format';
+import { NumericFormat, PatternFormat } from 'react-number-format';
 
 import { useFieldSpec } from "../inc/hooks";
 import { FormContext } from "../parts";
@@ -22,6 +22,8 @@ export const fieldspec_to_input = (name, field_spec) => {
       return <InputDate name={name} />;
     case 'number':
       return <InputNumber name={name} />;
+    case 'positive_number':
+      return <InputPositiveNumber name={name} />;
     case 'email':
       return <InputEmail name={name} />;
     case 'textarea':
@@ -127,10 +129,10 @@ function MaskedInputText({name, rfn_props = {}}) {
 
   return (
     <PatternFormat
-      format={field_spec?.input_format}  // rfn, required
-      customInput={MaskedInnerInput} // rfn
-      // getInputRef={field.ref} // rfn  warning
-      // valueIsNumericString={true} // rfn
+      format={field_spec?.input_format}  // rfnum, required
+      customInput={MaskedInnerInput} // rfnum
+      // getInputRef={field.ref} // rfnum  warning
+      // valueIsNumericString={true} // rfnum
 
       {...rfn_props}
 
@@ -170,14 +172,86 @@ function MaskedInnerInput (props) {
       onFocus={onFocus}
       onBlur={onBlur}
       onChange={onChange}
-      onKeyDown={props.onKeyDown} // rfn
-      onMouseUp={props.onMouseUp} // rfn
+      onKeyDown={props.onKeyDown} // rfnum
+      onMouseUp={props.onMouseUp} // rfnum
 
       disabled={rhf_props?.disabled}
       ref={rhf_props.ref}
 
       placeholder={other_props.placeholder}
       readOnly={other_props?.readOnly}
+    />
+  );
+}
+
+/**
+ * TODO allow changing props of NumericFormat on Django side
+ * @link https://s-yadav.github.io/react-number-format/docs/numeric_format
+ */
+function InputPositiveNumber({name}) {
+  const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
+  const rhf_props = rhf.register(name, rhf_options);
+
+  return (
+    <NumericFormat
+      customInput={NumericInnerInput} // rfnum
+      allowNegative={false} // rfnum
+      decimalScale={0} // rfnum
+      allowLeadingZeros={false} // rfnum
+
+      name={name}
+      value={rhf_options.value}
+
+      rhf_props={rhf_props}
+      other_props={other_attrs}
+    />
+  );
+}
+
+function NumericInnerInput (props) {
+  const rhf_props = props.rhf_props;
+  const other_props = props.other_props;
+  
+  // const setDefaultValue = (e, default_value) => {
+  //   if (! e.target.value) {
+  //     e.target.value = default_value;
+  //   }
+  // };
+
+  const onFocus = e => {
+    props.onFocus(e);
+    other_props.onFocus(e);
+  };
+
+  const onBlur = e => {
+    props.onBlur(e);
+    rhf_props.onBlur(e);
+  };
+
+  const onChange = e => {
+    // setDefaultValue(e, '0');
+    props.onChange(e);
+    rhf_props.onChange(e);
+  };
+
+  return (
+    <input
+      name={props.name}
+      type={props.type}
+      value={props.value} // ???
+      onFocus={onFocus}
+      onBlur={onBlur}
+      onChange={onChange}
+      onKeyDown={props.onKeyDown} // rfnum
+      onMouseUp={props.onMouseUp} // rfnum
+
+      disabled={rhf_props?.disabled}
+      ref={rhf_props.ref}
+
+      placeholder={other_props.placeholder}
+      readOnly={other_props?.readOnly}
+
+      inputMode="numeric" // TODO move to Django widget.attrs
     />
   );
 }

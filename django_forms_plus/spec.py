@@ -139,6 +139,8 @@ def get_form_spec(form: DjangoForm) -> FormState:
                 default_initial = ''
             case 'NumberInput':
                 field_spec['type'] = 'number'
+            case 'PositiveNumberInput':
+                field_spec['type'] = 'positive_number'
             case 'EmailInput':
                 field_spec['type'] = 'email'
                 default_initial = ''

@@ -45,6 +45,15 @@ export function build_validation_schema(spec, i18n_phrases) {
         base_type = number();
         rule = number();
         break;
+      case 'positive_number':
+        // the field's formatting is restricted by "react-number-format" library for now
+        // therefore it isn't necessary to validate "number" here
+        // if the field is allowed to be empty it requires the related Model.field to be nullable
+        // because "empty string" value is transformed to None in django.forms.fields.IntegerField.to_python
+        // otherwise you'll get DB integrity exception
+        base_type = string();
+        rule = string();
+        break;
       case 'checkbox':
         base_type = boolean();
         rule = boolean();
@@ -60,7 +69,7 @@ export function build_validation_schema(spec, i18n_phrases) {
     }
 
     if (field.required) {
-       rule = rule.required(field.errors.required);
+        rule = rule.required(field.errors.required);
     }
 
     const has_cl = !! cl_fields[name];
