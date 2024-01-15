@@ -3,12 +3,12 @@
 Set `helper.debug_enabled` to `True`
 ```python
 from django import forms
-from django_forms_plus import DfpFormMixin
+from django_forms_plus import DfpFormMixin, Helper
 
 class ContactsForm(DfpFormMixin, forms.ModelForm):
     # ...
     
-    def change_helper(self, helper) -> None:
+    def change_helper(self, helper: Helper) -> None:
         helper.debug_enabled = True
 ```
 
