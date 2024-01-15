@@ -9,11 +9,7 @@ class DfpInputMixin:
         super().__init__(*args, **kwargs)
 
 
-class DumbInput(DfpInputMixin, forms.TextInput):
-    pass
-
-
-class CaptchaInput(DumbInput):
+class CaptchaInput(DfpInputMixin, forms.TextInput):
     pass
 
 

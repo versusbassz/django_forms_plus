@@ -1,7 +1,7 @@
 # ruff: noqa: F401
 from .types import (FormSpec, FormState, FormData, DjangoForm,
                     JsonFormResponse, FormResponseAction)
-from .widgets import DumbInput, CaptchaInput
+from .widgets import CaptchaInput
 from .spec import get_form_spec
 from .forms import DfpFormMixin, CompositeForm
 from .form_helper import Helper
