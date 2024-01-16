@@ -3,6 +3,14 @@ Sections: Spec, Features, Backend, Frontend
 
 # The changelog
 
+## 0.9.0 - 2024.01.16
+
+new: Add PositiveNumberInput widget
+refactor, bc: Remove unnecessary "DumbInput" widget
+refactor, bc: Move "dfp_field=True" to DfpInputMixin
+
+fix, maintenance: Update "react-number-format" package: 5.1.3 -> 5.3.1
+
 ## 0.8.0 - 2023.10.27
 
 new: Add support for `django.forms.URLInput` widget
