@@ -1,10 +1,11 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Sequence
 if TYPE_CHECKING:
     from django.db import models
 
 import datetime
 
+from django.core.exceptions import NON_FIELD_ERRORS
 from django.http import JsonResponse
 from django import forms
 from django.core.files import File
@@ -17,6 +18,7 @@ __all__ = [
     'json_success_response',
     'json_success_modelform_response',
     'json_fail_response',
+    'json_fail_common_response',
     'message_result_action',
 ]
 
@@ -77,6 +79,13 @@ def json_fail_response(
     return JsonResponse(JsonFormResponse(
         status='fail',
         errors=form.errors,
+    ).dict())
+
+
+def json_fail_common_response(errors: Sequence) -> JsonResponse:
+    return JsonResponse(JsonFormResponse(
+        status='fail',
+        errors={NON_FIELD_ERRORS: list(errors)},
     ).dict())
 
 
