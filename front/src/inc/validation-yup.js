@@ -57,6 +57,15 @@ export function build_validation_schema(spec, i18n_phrases) {
       case 'checkbox':
         base_type = boolean();
         rule = boolean();
+
+        // if a checkbox is required it means it has to be boolean:true
+        if (field.required) {
+          rule = rule.test(
+            'checkbox_is_true',
+            field.errors.required,
+            (value, context) => value === true,
+          );
+        }
         break;
       case 'image':
         base_type = mixed();
