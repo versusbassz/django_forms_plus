@@ -91,10 +91,24 @@ function do_action(response, form_context) {
   console.log('Response:', response);
   const action = response.result_action
   switch (action.type) {
+
     case 'url':
       console.log('ACTION: CHANGE_URL')
       document.location.href = action.meta.url
       break
+
+    case 'custom':
+      console.log('ACTION: CUSTOM');
+      const event = new CustomEvent('dfp:custom_action', {
+        detail: {
+          form_id: form_context.spec.id,
+          response: response,
+          form_context: form_context,
+        },
+      });
+      document.dispatchEvent(event);
+      break;
+
     case 'message':
     default:
       console.log('ACTION: MESSAGE')
