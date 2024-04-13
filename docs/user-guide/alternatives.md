@@ -9,6 +9,12 @@ Maintained.
 [docs](https://django-crispy-forms.readthedocs.io/en/latest/),
 [pypi](https://pypi.org/project/django-crispy-forms/)
 
+
+## FastUI
+
+[github](https://github.com/pydantic/FastUI)
+
+
 ## dynamic-django-forms
 Allows you to build (and respond to) dynamic forms. Perfect for surveys, position applications, etc.
 
