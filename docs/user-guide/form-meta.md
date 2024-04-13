@@ -51,3 +51,28 @@ ExternalHtml(
     warn_if_not_found=False,  # Default: True. Do console.warn() if a block not found
 )
 ```
+
+
+## Fieldsets
+
+```python
+fieldsets = [
+    {
+        'title': 'Fieldset title',
+        'desc': 'The example of a fieldset description.',
+        'fields': ['field_1', 'field_2', 'field_3'],
+        'css_classes': ['css-class-1', 'css-class-2'],
+     },
+]
+```
+
+If no fieldsets are provided in `DfpMeta`, DFP creates just one fieldset with only `fields` key.
+
+```python
+fieldsets = [
+    {
+        'fields': ['field_1', 'field_2', 'field_3'],
+    },
+]
+```
+
