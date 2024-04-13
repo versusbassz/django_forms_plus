@@ -4,10 +4,26 @@ import classNames from "classnames";
 const MESSAGE_TYPE__SUCCESS = 'success';
 const MESSAGE_TYPE__ERROR = 'error';
 
-export function SuccessMessage({close, content = ''}) {
-  if (! content) content = 'Форма успешно отправлена!';
+export function SuccessMessage({close, content = '', externalBlock = ''}) {
+  let _content = content;
+
+  if (externalBlock) {
+    const $block = document.querySelector(externalBlock);
+    if (!$block) {
+      console.error(`externalBlock for SuccessMessage not found: ${externalBlock}`);
+      return null;
+    }
+
+    const externalHTML = $block.innerHTML;
+    return <div dangerouslySetInnerHTML={{__html: externalHTML}} />
+  }
+
+  if (!_content) {
+    _content = 'Форма успешно отправлена!';
+  }
+
   return (
-    <GenericMessage type={MESSAGE_TYPE__SUCCESS} content={content} close={close} />
+    <GenericMessage type={MESSAGE_TYPE__SUCCESS} content={_content} close={close} />
   )
 }
 

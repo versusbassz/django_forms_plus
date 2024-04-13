@@ -21,8 +21,8 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
   });
 
   const [ successMsg, _setSuccessMsg ] = useState(null);
-  const setSuccessMsg = (content, position = 'bottom') => {
-    _setSuccessMsg({content, position});
+  const setSuccessMsg = (content, position = 'bottom', externalBlock = '') => {
+    _setSuccessMsg({content, position, externalBlock});
   };
   const closeSuccessMsg = () => _setSuccessMsg(null);
 
@@ -113,7 +113,11 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
             {/* "Success" message - top */}
             {successMsg && successMsg.position === 'top' && (
               <FieldsetSimple>
-                <SuccessMessage content={successMsg.content} close={closeSuccessMsg} />
+                <SuccessMessage
+                  content={successMsg.content}
+                  close={closeSuccessMsg}
+                  externalBlock={successMsg.externalBlock}
+                />
               </FieldsetSimple>
             )}
 
@@ -137,7 +141,11 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
             {/* "Success" message - bottom */}
             {successMsg && successMsg.position === 'bottom' && (
               <FieldsetSimple>
-                <SuccessMessage content={successMsg.content} close={closeSuccessMsg} />
+                <SuccessMessage
+                  content={successMsg.content}
+                  close={closeSuccessMsg}
+                  externalBlock={successMsg.externalBlock}
+                />
               </FieldsetSimple>
             )}
 

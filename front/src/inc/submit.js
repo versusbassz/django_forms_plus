@@ -112,7 +112,11 @@ function do_action(response, form_context) {
     case 'message':
     default:
       console.log('ACTION: MESSAGE')
-      form_context.setSuccessMsg(action?.meta?.message)
+      form_context.setSuccessMsg(
+        action?.meta?.message,
+        'bottom',
+        action?.meta?.external_block,
+      );
   }
 }
 
