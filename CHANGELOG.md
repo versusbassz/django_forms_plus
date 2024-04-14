@@ -3,6 +3,20 @@ Sections: Spec, Features, Backend, Frontend
 
 # The changelog
 
+## 0.11.1 - 2024.04.14
+
+new: Add a feature to display a custom layout instead of the default "Success message" (via "external_block" param for "Response action" of type "message")
+new: Add "Response Action" type "custom"
+
+docs: Add drafts for some topics
+
+
+## 0.10.0 - 2024.03.26
+
+new: Add json_fail_common_response() py-helper
+fix: Require true value for checkboxes with required=true (on frontend). It's the expected behaviour
+
+
 ## 0.9.0 - 2024.01.16
 
 new: Add PositiveNumberInput widget
