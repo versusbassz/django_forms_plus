@@ -12,3 +12,7 @@
 - `make release`
 - log in to https://pypi.org/manage/projects/
 - `poetry publish`
+
+## How to update in client projects
+
+`poetry add django-forms-plus==<new_version>`
