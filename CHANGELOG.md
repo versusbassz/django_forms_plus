@@ -3,6 +3,10 @@ Sections: Spec, Features, Backend, Frontend
 
 # The changelog
 
+## 0.11.2 - 2024.05.01
+
+fix: Fix XSS in how JSON-spec of a form used to be inserted in HTML during a page rendering
+
 ## 0.11.1 - 2024.04.14
 
 new: Add a feature to display a custom layout instead of the default "Success message" (via "external_block" param for "Response action" of type "message")
