@@ -27,6 +27,7 @@ include = ["django_forms_plus/static/**/*"]
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^1.10.2"
+ujson = "^5.9.0"
 
 [tool.poetry.dev-dependencies]
 Django = "^3.2"

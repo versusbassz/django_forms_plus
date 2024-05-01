@@ -1,3 +1,4 @@
+import ujson
 from django.apps import apps
 from django.http import HttpRequest
 from django.middleware.csrf import get_token
@@ -20,7 +21,12 @@ def get_form_layout(form: DjangoForm, request: HttpRequest) -> str:
 def get_form_layout_raw(form_state: FormState,
                         csrf_token: str | None = None) -> str:
     """Renders a form placeholder with all necessary data for its rendering"""
-    form_state_json = form_state.json()
+    form_state_dict = form_state.dict()
+    # "ujson" lib is used to improve XSS protection in this place
+    form_state_json = ujson.dumps(
+        form_state_dict,
+        escape_forward_slashes=True, encode_html_chars=True, ensure_ascii=True,
+    )
     _form_state = form_state_json
     _csrf_token = csrf_token
     js_script_url = _get_static_file_url('django_forms_plus/dfp.build.js')
@@ -28,8 +34,8 @@ def get_form_layout_raw(form_state: FormState,
 
 <div class="js-dj-form-wrapper dfp-form-container">
     <div style="display: none !important;">
-        <pre class="js-dj-form__data">{_form_state}</pre>
-        <pre class="js-csrf-token">{_csrf_token}</pre>
+        <script class="js-dj-form__data" type="type="application/json">{_form_state}</script>
+        <script class="js-csrf-token" type="text/plain">{_csrf_token}</script>
         <script src="{js_script_url}" async></script>
     </div>
 

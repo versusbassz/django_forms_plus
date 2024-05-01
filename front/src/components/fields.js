@@ -325,9 +325,10 @@ export function InputHidden({name}) {
 
 function Textarea({name}) {
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
+  const rhf_attrs = rhf.register(name, rhf_options);
   return (
-    <textarea {...rhf.register(name, rhf_options)} {...other_attrs} />
-  )
+    <textarea {...rhf_attrs} {...other_attrs} />
+  );
 }
 
 function InputCheckbox({name}) {
