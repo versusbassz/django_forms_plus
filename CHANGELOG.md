@@ -3,6 +3,11 @@ Sections: Spec, Features, Backend, Frontend
 
 # The changelog
 
+## 0.12.0 - 2024.05.02
+
+bc, maintenance: Update pydantic: 1.10.4 -> 2.7.1
+dev: Update ruff: 0.0.256 -> 0.4.2
+
 ## 0.11.2 - 2024.05.01
 
 fix: Fix XSS in how JSON-spec of a form used to be inserted in HTML during a page rendering
