@@ -29,12 +29,12 @@ python = "^3.10"
 pydantic = "^2.7.1"
 ujson = "^5.9.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 Django = "^3.2"
 django-extensions = "^3.2.1"
 mkdocs = "^1.4.2"
 PyYAML = "^6.0"
-ruff = "^0.0.256"
+ruff = "^0.4.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
