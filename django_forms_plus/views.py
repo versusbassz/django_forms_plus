@@ -21,7 +21,7 @@ def get_form_layout(form: DjangoForm, request: HttpRequest) -> str:
 def get_form_layout_raw(form_state: FormState,
                         csrf_token: str | None = None) -> str:
     """Renders a form placeholder with all necessary data for its rendering"""
-    form_state_dict = form_state.dict()
+    form_state_dict = form_state.model_dump()
     # "ujson" lib is used to improve XSS protection in this place
     form_state_json = ujson.dumps(
         form_state_dict,

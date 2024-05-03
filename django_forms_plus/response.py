@@ -32,7 +32,7 @@ def json_success_response(
         payload=payload,
         result_action=action,
     )
-    return JsonResponse(form_response.dict())
+    return JsonResponse(form_response.model_dump())
 
 
 def json_success_modelform_response(
@@ -70,7 +70,7 @@ def json_success_modelform_response(
         payload=_payload,
         result_action=action,
     )
-    return JsonResponse(form_response.dict())
+    return JsonResponse(form_response.model_dump())
 
 
 def json_fail_response(
@@ -79,14 +79,14 @@ def json_fail_response(
     return JsonResponse(JsonFormResponse(
         status='fail',
         errors=form.errors,
-    ).dict())
+    ).model_dump())
 
 
 def json_fail_common_response(errors: Sequence) -> JsonResponse:
     return JsonResponse(JsonFormResponse(
         status='fail',
         errors={NON_FIELD_ERRORS: list(errors)},
-    ).dict())
+    ).model_dump())
 
 
 def message_result_action(msg: str, meta: dict = None):

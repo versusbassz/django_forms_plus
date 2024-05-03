@@ -31,7 +31,7 @@ class FormState(BaseModel):
 
     @property
     def dump(self):
-        return self.json(indent=4)
+        return self.model_dump_json(indent=4)
 
 
 class FormResponseAction(BaseModel):
