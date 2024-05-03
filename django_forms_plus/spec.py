@@ -88,10 +88,18 @@ def get_form_spec(form: DjangoForm) -> FormState:
                     raise ValueError('"required" prop must not be set via DfpMeta.validators. '
                                      'Set it on a Form\'s Field itself')
 
+                validator_type = validator['type'] if 'type' in validator else validator['name']
+
+                validator_value = validator['value']
+                if validator_type == 'regexp':
+                    # unwrap django.utils.regex_helper._lazy_re_compile()
+                    # called in RegexValidator.__init__() for RegexValidator.regexp
+                    validator_value = str(validator_value)
+
                 cur_validator = {
                     'name': validator['name'],
-                    'type': validator['type'] if 'type' in validator else validator['name'],
-                    'value': validator['value'],
+                    'type': validator_type,
+                    'value': validator_value,
                     'inverse': validator['inverse'] if 'inverse' in validator else False,
                     'allow_empty': validator['allow_empty'] if 'allow_empty' in validator else False,
                     'message': str(validator['message']) if 'message' in validator else None,
@@ -104,14 +112,23 @@ def get_form_spec(form: DjangoForm) -> FormState:
                     field_spec['errors'][validator['name']] = str(error_value)
 
         # Soft validators
+        # TODO extract the validators (regular & soft) building logic to a class and get rid of copypasta
         field_spec['soft_validators'] = []
         has_soft_validators = hasattr(helper, 'soft_validators') and name in helper.soft_validators
         if has_soft_validators:
             for validator in helper.soft_validators[name]:
+                validator_type = validator['type'] if 'type' in validator else validator['name']
+
+                validator_value = validator['value'] if 'value' in validator else None
+                if validator_type == 'regexp':
+                    # unwrap django.utils.regex_helper._lazy_re_compile()
+                    # called in RegexValidator.__init__() for RegexValidator.regexp
+                    validator_value = str(validator_value)
+
                 field_spec['soft_validators'].append({
                     'name': validator['name'],
-                    'type': validator['type'] if 'type' in validator else validator['name'],
-                    'value': validator['value'] if 'value' in validator else None,
+                    'type': validator_type,
+                    'value': validator_value,
                     'inverse': validator['inverse'] if 'inverse' in validator else False,
                     'allow_empty': validator['allow_empty'] if 'allow_empty' in validator else False,
                     'message': str(validator['message']),  # a message is required for now
