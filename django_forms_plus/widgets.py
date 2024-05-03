@@ -18,7 +18,7 @@ class FormattedInput(DfpInputMixin, forms.TextInput):
 
     def __init__(self, input_format: str, attrs: dict | None = None):
         self.input_format = input_format
-        super().__init__(attrs)
+        super().__init__(attrs=attrs)
 
 
 class PositiveNumberInput(DfpInputMixin, forms.TextInput):
