@@ -3,6 +3,10 @@ Sections: Spec, Features, Backend, Frontend
 
 # The changelog
 
+## 0.12.1 - 2024.05.03
+
+refactor: Replace deprecated "pydantic" v1 method calls
+
 ## 0.12.0 - 2024.05.02
 
 bc, maintenance: Update pydantic: 1.10.4 -> 2.7.1
