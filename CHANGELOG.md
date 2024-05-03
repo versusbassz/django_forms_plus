@@ -3,6 +3,11 @@ Sections: Spec, Features, Backend, Frontend
 
 # The changelog
 
+## 0.12.2 - 2024.05.03
+
+fix: Fix FormattedInput.attrs
+fix: Fix handling of regexp-validators during spec building (after pydantic v2 update)
+
 ## 0.12.1 - 2024.05.03
 
 refactor: Replace deprecated "pydantic" v1 method calls
