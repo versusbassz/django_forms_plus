@@ -42,6 +42,13 @@ backend.lint:
 backend.run:
 	cd dev_site && ./manage.py runserver localhost:8001
 
+# Tests
+test:
+	@ pytest
+
+test-debug:
+	@ pytest --headed --slowmo=1500  # "slowmo" is in milliseconds
+
 # Docs
 # see: https://www.mkdocs.org/user-guide/cli/#mkdocs-serve
 docs.gen-css:
