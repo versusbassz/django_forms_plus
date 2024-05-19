@@ -10,6 +10,7 @@ class AddFormDebugForViewMixin:
         spec = get_form_spec(form)
 
         context['form_state'] = spec
+        context['form_state_raw'] = spec.model_dump_json()
         context['form_state_formatted'] = spec.model_dump_json(indent=4)
 
         if not hasattr(self, 'x_page_title'):
