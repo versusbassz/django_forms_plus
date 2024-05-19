@@ -3,7 +3,10 @@ from django.http import HttpRequest, HttpResponse
 
 
 def homepage(request: HttpRequest, *args, **kwargs):
-    return render(request, 'apex/index.html')
+    context = {
+        'title': 'Homepage',
+    }
+    return render(request, 'apex/index.html', context=context)
 
 
 def success(request: HttpRequest, *args, **kwargs):
