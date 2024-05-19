@@ -1,6 +1,6 @@
 from django import forms
 
-from apex.misc import FailCaptchaMixin
+from apex.misc.captcha import FailCaptchaMixin
 
 
 class ResetPwdForm(FailCaptchaMixin, forms.Form):
