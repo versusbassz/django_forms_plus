@@ -13,17 +13,14 @@ __all__ = [
 
 
 _conditional_logic = {
-    'version': 1,
-    'rules': {
-        'middle_name': [
-            [
-                {
-                    'field': 'has_middle_name',
-                    'operator': 'checked',
-                },
-            ],
+    'middle_name': [
+        [
+            {
+                'field': 'has_middle_name',
+                'operator': 'checked',
+            },
         ],
-    },
+    ],
 }
 
 

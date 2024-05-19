@@ -74,15 +74,12 @@ class ContactsForm(DfpFormMixin, forms.Form):
             'required': 'i18n-local-form: Required field.',
         }
         conditional_logic = {
-            'version': 1,
-            'rules': {
-                'pin': [
-                    [
-                        {
-                            'field': 'enter_pin',
-                            'operator': 'checked',
-                        },
-                    ],
+            'pin': [
+                [
+                    {
+                        'field': 'enter_pin',
+                        'operator': 'checked',
+                    },
                 ],
-            },
+            ],
         }
