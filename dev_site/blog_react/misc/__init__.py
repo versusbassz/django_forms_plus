@@ -7,7 +7,13 @@ class AddFormDebugForViewMixin:
         context = super().get_context_data(*args, **kwargs)
 
         form = context['form']
-        context['form_state'] = get_form_spec(form)
-        context['form_state_formatted'] = get_form_spec(form).json(indent=4)
+        spec = get_form_spec(form)
+
+        context['form_state'] = spec
+        context['form_state_formatted'] = spec.model_dump_json(indent=4)
+
+        if not hasattr(self, 'x_page_title'):
+            raise ValueError('set "x_page_title" attr for the view. It is required by AddFormDebugForViewMixin')
         context['title'] = self.x_page_title
+
         return context
