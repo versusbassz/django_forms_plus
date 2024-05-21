@@ -46,3 +46,11 @@ def test_dfp_profile_add_form(page: Page):
     assert response.ok
     expect(page).to_have_title(re.compile('add', re.IGNORECASE))
     expect(page.locator(f'css=.dfp-form')).to_be_visible()
+
+
+def test_dfp_recipient_add_form(page: Page):
+    response = page.goto(DEV_SITE_ROOT_URL + '/blog_react/recipient/add/')
+
+    assert response.ok
+    expect(page).to_have_title(re.compile('radio', re.IGNORECASE))
+    expect(page.locator(f'css=.dfp-form')).to_be_visible()

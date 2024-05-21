@@ -32,6 +32,8 @@ export const fieldspec_to_input = (name, field_spec) => {
       return <InputCheckbox name={name} />;
     case 'select':
       return <Select name={name} />;
+    case 'radio':
+      return <RadioSelect name={name} />;
     case 'image':
       return <ImageUpload name={name} />;
     case 'hidden':
@@ -69,6 +71,7 @@ const rhf_options = (field_spec, setFocusedField, trigger) => {
       setFocusedField(null);
       trigger(field_spec.name);
     },
+    //shouldUnregister: true, // it removes values hidden by CL, so... it isn't useful in real
   }
   return attrs;
 }
@@ -340,6 +343,34 @@ function InputCheckbox({name}) {
       <label htmlFor={name}>{field_spec.label_hint}</label>
     </div>
   )
+}
+
+function RadioSelect({name}) {
+  const {spec} = useContext(FormContext);
+  const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
+  const [field_spec, _] = useFieldSpec(name);
+  return (
+    <div className="dfp-radio-list">
+      {field_spec.choices.map((item, index) => {
+        const inputId = `${spec.id}--${name}--${index}`;
+        return (
+          <div className="dfp-radio-list__item dfp-radio-item" key={index}>
+            <div className="dfp-radio-item__input-wrapper">
+              <input
+                type="radio"
+                className="dfp-radio-item__input"
+                value={item[0]}
+                id={inputId}
+                {...rhf.register(name, rhf_options)}
+                {...other_attrs}
+              />
+            </div>
+            <label htmlFor={inputId} className="dfp-radio-item__label">{item[1]}</label>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 function Select({name}) {

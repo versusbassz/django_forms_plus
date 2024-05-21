@@ -18,4 +18,6 @@ urlpatterns = [
     path('customer/add/', views.CustomerAddView.as_view(), name='customer_add'),
     path('customer/change/<int:pk>/', views.CustomerChangeView.as_view(), name='customer_change'),
     path('customer/delete/<int:pk>/', views.CustomerDeleteView.as_view(), name='customer_delete'),
+
+    path('recipient/add/', views.RecipientAddView.as_view(), name='recipient_add'),
 ]

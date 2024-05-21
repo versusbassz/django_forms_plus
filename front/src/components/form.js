@@ -44,7 +44,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
   useEffect(() => {
     if (document.location.search.includes('dfp_validate_onstart')) {
       console.log('validate on start');
-      validate_on_start();
+      setTimeout(() => validate_on_start(), 100); // TODO a dirty fix
     }
   }, []);
 
@@ -71,6 +71,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
     }
   }, []);
 
+  /** @type {import("../types").DfpFormContext} */
   const context = {
     spec: spec,
     rhf: { register, watch, trigger, control, formState, getFieldState, setValue, clearErrors },

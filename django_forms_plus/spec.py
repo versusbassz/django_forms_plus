@@ -1,26 +1,42 @@
-from django.db.models.fields.files import ImageFieldFile
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .types import (
+        DjangoForm, FieldSpecsDict, FieldSpec,
+        FieldsetSpecList, FieldsetSpec, FieldsetFieldList,
+        ValidatorSpec, HiddenFields, ImageFileInfo,
+    )
 
-from .types import DjangoForm, FormState, FormSpec, FormData
+
+from django.forms import BoundField
+from django.db.models.fields.files import ImageFieldFile
+from django.core.validators import RegexValidator
+
+from .form_helper import Helper
+from .types import FormState, FormSpec, FormData
 from .errors import get_global_error_messages, get_error_message
 from .layout import LayoutItem
 
 
 def get_form_spec(form: DjangoForm) -> FormState:
+    if not hasattr(form, 'helper') or not isinstance(form.helper, Helper):
+        raise TypeError('The form MUST have "helper" attr of Helper (sub-)class')
+
     if form.helper.spec is not None:  # caching
         # TODO probably, it's better to move the building logic
         #      to a separate build_form_spec() function and keep caching logic here
         # TODO do we need to clear the cache somehow ??? (an func argument / method of an object)
         return form.helper.spec
 
-    helper = form.helper
+    helper: Helper = form.helper
 
     # we need to process bound fields to act closely to the original Django forms logic
     # see django.forms.forms.BaseForm.__iter__
     #     (it's an entry point during rendering forms in templates)
-    bound_fields = {f_name: form[f_name] for f_name in form.fields}
+    bound_fields: dict[str, BoundField] = {f_name: form[f_name] for f_name in form.fields}
 
-    fields = {}
-    hidden_fields = []
+    fields: FieldSpecsDict = {}
+    hidden_fields: HiddenFields = []
     for name, bound_field in bound_fields.items():
         field = bound_field.field
         field_name = field.dfp_field_name if hasattr(field, 'dfp_field_name') else type(field).__name__
@@ -28,7 +44,7 @@ def get_form_spec(form: DjangoForm) -> FormState:
         widget = bound_field.field.widget
         widget_name = widget.dfp_widget_name if hasattr(widget, 'dfp_widget_name') else type(widget).__name__
 
-        field_spec = {
+        field_spec: FieldSpec = {
             'name': name,
             'label': str(field.label),
             'help_text': str(field.help_text),
@@ -72,16 +88,15 @@ def get_form_spec(form: DjangoForm) -> FormState:
 
         # Validators
         field_spec['validators'] = []
-        has_custom_validators = hasattr(helper, 'validators')
+
         match field_name:
             case 'CharField':
                 if hasattr(field, 'max_length') and field.max_length:
-                    field_spec['validators'].append({'name': 'max_length', 'type': 'max_length',
-                                                     'value': field.max_length})
+                    field_spec['validators'].append(_get_str_length_validator(field=field, name='max_length'))
                 if hasattr(field, 'min_length') and field.min_length:
-                    field_spec['validators'].append({'name': 'min_length', 'type': 'min_length',
-                                                     'value': field.min_length})
+                    field_spec['validators'].append(_get_str_length_validator(field=field, name='min_length'))
 
+        has_custom_validators = hasattr(helper, 'validators')
         if has_custom_validators and name in helper.validators:
             for validator in helper.validators[name]:
                 if validator['name'] == 'required':
@@ -92,16 +107,31 @@ def get_form_spec(form: DjangoForm) -> FormState:
 
                 validator_value = validator['value']
                 if validator_type == 'regexp':
-                    # unwrap django.utils.regex_helper._lazy_re_compile()
-                    # called in RegexValidator.__init__() for RegexValidator.regexp
-                    validator_value = str(validator_value)
+                    if isinstance(validator['value'], str):
+                        # validator['value'] as str (a pattern) is allowed
+                        pass
+                    else:
+                        # The important moments here:
+                        # 1. if validator['value'] is not a string we expect it's a re.Pattern
+                        # 2. django.core.validators.RegexValidator uses lazy logic
+                        #    via django.utils.regex_helper._lazy_re_compile()
+                        #    called in RegexValidator.__init__() for RegexValidator.regexp
+                        #    So we unwrap it and uses "Re.pattern" attr explicitly
+                        # 3. Pydantic v1 transforms re.Pattern to str during BaseModel.json()
+                        #    -
+                        #    Pydantic v2 just applies str() to a regexp.
+                        #    That is incorrect for our case that's why we transform the regexp to str explicitly
+                        #    just by using "pattern" attr
+                        if not hasattr(validator_value, 'pattern'):
+                            raise TypeError(f're.Pattern expected, got {type(validator_value)}')
+                        validator_value = validator_value.pattern
 
-                cur_validator = {
+                cur_validator: ValidatorSpec = {
                     'name': validator['name'],
                     'type': validator_type,
                     'value': validator_value,
                     'inverse': validator['inverse'] if 'inverse' in validator else False,
-                    'allow_empty': validator['allow_empty'] if 'allow_empty' in validator else False,
+                    'allow_empty': validator['allow_empty'] if 'allow_empty' in validator else False,  # TODO is this condition correct  # noqa: E501
                     'message': str(validator['message']) if 'message' in validator else None,
                 }
                 field_spec['validators'].append(cur_validator)
@@ -121,18 +151,35 @@ def get_form_spec(form: DjangoForm) -> FormState:
 
                 validator_value = validator['value'] if 'value' in validator else None
                 if validator_type == 'regexp':
-                    # unwrap django.utils.regex_helper._lazy_re_compile()
-                    # called in RegexValidator.__init__() for RegexValidator.regexp
-                    validator_value = str(validator_value)
+                    if isinstance(validator['value'], str):
+                        # validator['value'] as str (a pattern) is allowed
+                        pass
+                    else:
+                        # The important moments here:
+                        # 1. if validator['value'] is not a string we expect it's a re.Pattern
+                        # 2. django.core.validators.RegexValidator uses lazy logic
+                        #    via django.utils.regex_helper._lazy_re_compile()
+                        #    called in RegexValidator.__init__() for RegexValidator.regexp
+                        #    So we unwrap it and uses "Re.pattern" attr explicitly
+                        # 3. Pydantic v1 transforms re.Pattern to str during BaseModel.json()
+                        #    -
+                        #    Pydantic v2 just applies str() to a regexp.
+                        #    That is incorrect for our case that's why we transform the regexp to str explicitly
+                        #    just by using "pattern" attr
+                        if not hasattr(validator_value, 'pattern'):
+                            raise TypeError(f're.Pattern expected, got {type(validator_value)}')
+                        validator_value = validator_value.pattern
 
-                field_spec['soft_validators'].append({
+                soft_validator: ValidatorSpec = {  # for mypy
                     'name': validator['name'],
                     'type': validator_type,
                     'value': validator_value,
                     'inverse': validator['inverse'] if 'inverse' in validator else False,
                     'allow_empty': validator['allow_empty'] if 'allow_empty' in validator else False,
                     'message': str(validator['message']),  # a message is required for now
-                })
+                }
+
+                field_spec['soft_validators'].append(soft_validator)
 
         # attr: css_classes
         if hasattr(widget, 'css_classes') and isinstance(widget.css_classes, dict):
@@ -177,6 +224,9 @@ def get_form_spec(form: DjangoForm) -> FormState:
                 field_spec['type'] = 'hidden'
             case 'Select':
                 field_spec['type'] = 'select'
+                field_spec['choices'] = widget.choices
+            case 'RadioSelect':
+                field_spec['type'] = 'radio'
                 field_spec['choices'] = widget.choices
             case 'ClearableFileInput':
                 field_spec['type'] = 'image'
@@ -235,17 +285,21 @@ def get_form_spec(form: DjangoForm) -> FormState:
     return form_state
 
 
-def _get_fieldsets_spec(meta, fields_spec: dict) -> list:
+def _get_fieldsets_spec(meta: Helper, fields_spec: FieldSpecsDict) -> FieldsetSpecList:
+    fieldsets: FieldsetSpecList
     if hasattr(meta, 'fieldsets') and len(meta.fieldsets):
         fieldsets = []
         for fieldset_spec in meta.fieldsets:
-            fieldset = {}
+            fieldset: FieldsetSpec = {}
             if 'title' in fieldset_spec:
                 fieldset['title'] = str(fieldset_spec['title'])
             if 'desc' in fieldset_spec:
                 fieldset['desc'] = fieldset_spec['desc']
             fieldset['fields'] = _transform_fieldset_fields(fieldset_spec['fields'])
             fieldset['css_classes'] = fieldset_spec['css_classes'] if 'css_classes' in fieldset_spec else []
+            fieldset['conditional_logic'] = (
+                fieldset_spec['conditional_logic'] if 'conditional_logic' in fieldset_spec else []
+            )
             fieldsets.append(fieldset)
     else:
         fieldsets = [
@@ -256,8 +310,8 @@ def _get_fieldsets_spec(meta, fields_spec: dict) -> list:
     return fieldsets
 
 
-def _transform_fieldset_fields(fields: list) -> list:
-    result = []
+def _transform_fieldset_fields(fields: list) -> FieldsetFieldList:
+    result: FieldsetFieldList = []
     for field in fields:
         # TODO raise if field is not in fields list
         #      it will require to transform get_form_spec() to a class
@@ -269,8 +323,8 @@ def _transform_fieldset_fields(fields: list) -> list:
     return result
 
 
-def transform_image_field_file(file: ImageFieldFile | None) -> dict:
-    data = {
+def transform_image_field_file(file: ImageFieldFile | None) -> ImageFileInfo:
+    data: ImageFileInfo = {
         'exists': False,
         'url': '',
     }
@@ -278,3 +332,29 @@ def transform_image_field_file(file: ImageFieldFile | None) -> dict:
         data['exists'] = True
         data['url'] = file.url
     return data
+
+
+def _get_str_length_validator(field: BoundField, name: str) -> ValidatorSpec:
+    if name not in ['min_length', 'max_length']:
+        raise ValueError(f'incorrect name: {name}')
+    return {
+        'name': 'max_length',
+        'type': 'max_length',
+        'value': getattr(field, name),
+        'inverse': False,
+        'allow_empty': False,
+        'message': '',
+    }
+
+
+def prepare_regexp_validator(validator: RegexValidator, allow_empty: bool = False,
+                             inverse: bool = False) -> ValidatorSpec:
+    result: ValidatorSpec = {
+        'type': 'regexp',
+        'name': validator.code,
+        'value': validator.regex,
+        'allow_empty': allow_empty,
+        'inverse': inverse,
+        'message': validator.message,
+    }
+    return result

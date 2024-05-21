@@ -41,3 +41,7 @@ Move this document to the docs and Github issues
 - [ ] dev-env: add Jinja template backend (at least, for a basic checks)
 - [ ] a11y: success message "Close button" - to do global UI setting with switched off a11y by default (and display tag:a)
 - [ ] autosaving of forms
+
+
+Typical errors
+- Unknown widget type   -> a way to extend the Helper behaviour

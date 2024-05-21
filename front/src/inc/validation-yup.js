@@ -1,24 +1,36 @@
-import { object, string, number, boolean, mixed, setLocale } from 'yup';
+import { object, string, number, boolean, mixed, ObjectSchema, Schema } from 'yup';
 import * as dayjs from "dayjs";
 import customParseFormat from "dayjs/esm/plugin/customParseFormat";
 
 import { CSRF_TOKEN_NAME } from "./constants";
-import {collect_followed_fields, check_cl_state} from "./conditional-logic";
+import {collect_followed_fields, check_cl_state, getFieldsCLSpecs, fieldHasCL} from "./conditional-logic";
 
 dayjs.extend(customParseFormat);
 
+/**
+ *
+ * @param {import("../types").FormSpec} spec
+ * @param {import("../types").I18nPhrases} i18n_phrases
+ * @return {ObjectSchema}
+ */
 export function build_validation_schema(spec, i18n_phrases) {
-  let cl_fields = spec?.conditional_logic?.rules ? spec.conditional_logic.rules : [];
+  let cl_fields = getFieldsCLSpecs(spec);
 
+  /** @type {Object<string, ObjectSchema>} */
   const items = {}
+
   items[CSRF_TOKEN_NAME] = string().required();
 
   Object.entries(spec.fields).forEach(([name, field]) => {
     if (field.disabled) {
       return;
     }
+
+    /** @type Schema */
     let rule;
-    let base_type; // for CL
+
+    /** @type Schema - Used for CL */
+    let base_type;
 
     switch (field.type) {
       case 'text':
@@ -81,7 +93,8 @@ export function build_validation_schema(spec, i18n_phrases) {
         rule = rule.required(field.errors.required);
     }
 
-    const has_cl = !! cl_fields[name];
+    // Conditional logic
+    const has_cl = fieldHasCL(spec, name);
     if (has_cl) {
       const followed_fields = collect_followed_fields(cl_fields[name]);
       const followed_fields_list = Object.keys(followed_fields);
@@ -163,26 +176,51 @@ const get_file_type_validator = (validator) => {
   };
 };
 
+/**
+ * @param {*} value
+ * @param {*} context - TODO
+ * @return {boolean}
+ */
 const validateDate = (value, context) => {
   return isDate(value);
 };
 
 /**
- * @param {string} date
+ * @param {*} date - A value to check
  * @return {boolean}
  */
 const isDate = function(date) {
   if (! date?.length) {
-    return true;
+    return true;  // TODO is it correct ???
   }
   const d = dayjs(date, 'DD.MM.YYYY', true);
   return d.isValid();
 }
 
+/**
+ * @callback ForEachCallback
+ * @param {*} value
+ * @param {number} [index]
+ * @returns undefined
+ */
+
+/**
+ * @callback YupIsFunc
+ * @param {...*} [restParam]
+ * @returns boolean
+ */
+
+/**
+ * Return a function for "is" param of Yup's .when() method
+ *
+ * @param {import("../types").CLSpec} cl_groups
+ * @param {string[]} followed_fields_list
+ * @return {YupIsFunc}
+ */
 function getIsFunc(cl_groups, followed_fields_list) {
   return (...args) => {
     const followedFieldsState = {};
-    args.forEach((value, index) => {
+    args.forEach( /** @type {ForEachCallback} */ (value, index) => {
       const name = followed_fields_list[index];
       followedFieldsState[name] = value;
     });

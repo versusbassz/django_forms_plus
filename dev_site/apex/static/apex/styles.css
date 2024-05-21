@@ -88,7 +88,7 @@ body {
 .dfp-fieldset__title {
     margin-bottom: 10px;
     font-weight: 700;
-    font-size: 1.2em;
+    font-size: 1.3em;
 }
 
 .dfp-fieldset__desc {
@@ -205,6 +205,11 @@ body {
   }
 }
 
+
+/* Radio field */
+.dfp-radio-item {
+    display: flex;
+}
 
 
 /* Forms custom */

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING, Sequence, Any
 if TYPE_CHECKING:
     from django.db import models
 
@@ -27,9 +27,10 @@ def json_success_response(
     payload: dict | None = None,
     action: FormResponseAction | None = None,
 ) -> JsonResponse:
+    payload_ = payload if payload is not None else {}
     form_response = JsonFormResponse(
         status='success',
-        payload=payload,
+        payload=payload_,
         result_action=action,
     )
     return JsonResponse(form_response.model_dump())
@@ -38,13 +39,13 @@ def json_success_response(
 def json_success_modelform_response(
     form: forms.BaseForm,
     instance: models.Model,
-    payload: dict | None = None,
+    payload: dict[str, Any] | None = None,
     action: FormResponseAction | None = None,
 ) -> JsonResponse:
     """
     TODO probably it's better to remove "payload" param completely and only build a payload from form.cleaned_data
     """
-    _payload = {}
+    _payload: dict[str, Any] = {}
     if payload is None:
         for key, value in form.cleaned_data.items():
             widget = form.fields[key].widget
@@ -76,10 +77,12 @@ def json_success_modelform_response(
 def json_fail_response(
     form: forms.BaseForm
 ) -> JsonResponse:
-    return JsonResponse(JsonFormResponse(
+    errors = {field_name: [s for s in errors_list] for field_name, errors_list in form.errors.items()}
+    response_data = JsonFormResponse(
         status='fail',
-        errors=form.errors,
-    ).model_dump())
+        errors=errors,
+    ).model_dump()
+    return JsonResponse(response_data)
 
 
 def json_fail_common_response(errors: Sequence) -> JsonResponse:
@@ -89,7 +92,7 @@ def json_fail_common_response(errors: Sequence) -> JsonResponse:
     ).model_dump())
 
 
-def message_result_action(msg: str, meta: dict = None):
+def message_result_action(msg: str, meta: dict[str, Any] | None = None) -> FormResponseAction:
     _meta = {} if meta is None else meta
     _meta.update({'message': msg})
     return FormResponseAction(type='message', meta=_meta)

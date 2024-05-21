@@ -1,8 +1,9 @@
-import React, { useContext } from "react";
+import React, { useState, useEffect } from "react";
 
-import { FormContext, FieldSlot, ExternalHtml } from '../parts'
+import { useFormContext, FieldSlot, ExternalHtml } from '../parts'
 import { isString } from "../inc/utils";
 import classNames from "classnames";
+import { check_cl_state, collect_followed_fields } from "../inc/conditional-logic";
 
 
 const mapFieldsetItem = (item, index) => {
@@ -22,8 +23,34 @@ const mapFieldsetItem = (item, index) => {
 }
 
 export function Fieldset({index}) {
-  const {spec} = useContext(FormContext);
+  const {spec, rhf: {watch}} = useFormContext();
   const fieldset_spec = spec.fieldsets[index];
+
+  // Conditional logic
+  const [allowedByCL, setAllowedByCL] = useState(true);
+
+  const CLGroups = fieldset_spec?.conditional_logic || [];
+  const hasCL = CLGroups.length;
+
+  useEffect(() => {
+    if (! hasCL) return;
+
+    const followedFields = collect_followed_fields(CLGroups);
+
+    let followedFieldsState = {};
+    Object.keys(followedFields).forEach(item => {
+      followedFieldsState[item] = watch(item);
+    });
+
+    const CLEnabled = check_cl_state(CLGroups, followedFieldsState);
+    if (CLEnabled !== allowedByCL) {
+      setAllowedByCL(CLEnabled);
+    }
+  });  // on any change/render
+
+  if (! allowedByCL) return null;
+
+  // Render
   return (
     <FieldsetFull
       title={fieldset_spec.title}

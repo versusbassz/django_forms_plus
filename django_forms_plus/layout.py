@@ -1,4 +1,7 @@
-from abc import ABC
+from __future__ import annotations
+from abc import ABC, abstractmethod
+
+from .types import LayoutItemSpec
 
 
 __all__ = [
@@ -8,7 +11,9 @@ __all__ = [
 
 
 class LayoutItem(ABC):
-    pass
+    @abstractmethod
+    def to_spec(self) -> LayoutItemSpec:
+        ...
 
 
 class ExternalHtml(LayoutItem):
@@ -17,7 +22,7 @@ class ExternalHtml(LayoutItem):
     def __init__(self, selector: str) -> None:
         self.selector = selector
 
-    def to_spec(self):
+    def to_spec(self) -> LayoutItemSpec:
         return {
             'type': self.TYPE,
             'selector': self.selector,
