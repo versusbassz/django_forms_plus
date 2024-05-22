@@ -246,6 +246,9 @@ def _get_fieldsets_spec(meta, fields_spec: dict) -> list:
                 fieldset['desc'] = fieldset_spec['desc']
             fieldset['fields'] = _transform_fieldset_fields(fieldset_spec['fields'])
             fieldset['css_classes'] = fieldset_spec['css_classes'] if 'css_classes' in fieldset_spec else []
+            fieldset['conditional_logic'] = (
+                fieldset_spec['conditional_logic'] if 'conditional_logic' in fieldset_spec else []
+            )
             fieldsets.append(fieldset)
     else:
         fieldsets = [
