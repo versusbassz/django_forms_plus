@@ -71,6 +71,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
     }
   }, []);
 
+  /** @type {import("../types").DfpFormContext} */
   const context = {
     spec: spec,
     rhf: { register, watch, trigger, control, formState, getFieldState, setValue, clearErrors },

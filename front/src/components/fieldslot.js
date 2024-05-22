@@ -5,12 +5,19 @@ import { FormContext, fieldspec_to_input, FieldError } from "../parts";
 import { check_cl_state, collect_followed_fields,
          fieldHasCL, getFieldClGroups } from "../inc/conditional-logic";
 
+/**
+ * @param {import("../types").FormSpec} spec
+ * @param {string} name
+ * @param {function} watch
+ * @return {[boolean, import("../types").FollowedCLFields, followedFieldsStateType]}
+ */
 function useFieldCL(spec, name, watch) {
   let field_has_cl = fieldHasCL(spec, name);
   const cl_groups = getFieldClGroups(spec, name);
 
   const [followedFields, setFollowedFields] = useState([]);
 
+  /** @type {followedFieldsStateType} */
   let followedFieldsState = {};
   Object.keys(followedFields).forEach(item => {followedFieldsState[item] = watch(item);});
 
@@ -23,6 +30,12 @@ function useFieldCL(spec, name, watch) {
   return [field_has_cl, cl_groups, followedFieldsState];
 }
 
+
+/**
+ * @param {Object} props
+ * @param {string} props.name
+ * @return {React.FC|null}
+ */
 export function FieldSlot({ name }) {
   const { spec,  rhf: { watch, formState }, focusedField, validateOnStart, loading } = useContext(FormContext);
   const field_spec = spec.fields[name];
