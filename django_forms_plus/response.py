@@ -27,9 +27,10 @@ def json_success_response(
     payload: dict | None = None,
     action: FormResponseAction | None = None,
 ) -> JsonResponse:
+    payload_ = payload if payload is not None else {}
     form_response = JsonFormResponse(
         status='success',
-        payload=payload,
+        payload=payload_,
         result_action=action,
     )
     return JsonResponse(form_response.model_dump())
