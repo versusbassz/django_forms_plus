@@ -3,7 +3,7 @@ import * as dayjs from "dayjs";
 import customParseFormat from "dayjs/esm/plugin/customParseFormat";
 
 import { CSRF_TOKEN_NAME } from "./constants";
-import {collect_followed_fields, check_cl_state} from "./conditional-logic";
+import {collect_followed_fields, check_cl_state, getFieldsCLSpecs, fieldHasCL} from "./conditional-logic";
 
 dayjs.extend(customParseFormat);
 
@@ -14,7 +14,7 @@ dayjs.extend(customParseFormat);
  * @return {ObjectSchema}
  */
 export function build_validation_schema(spec, i18n_phrases) {
-  let cl_fields = spec?.conditional_logic?.rules ? spec.conditional_logic.rules : [];
+  let cl_fields = getFieldsCLSpecs(spec);
 
   /** @type {Object<string, ObjectSchema>} */
   const items = {}
@@ -93,7 +93,8 @@ export function build_validation_schema(spec, i18n_phrases) {
         rule = rule.required(field.errors.required);
     }
 
-    const has_cl = !! cl_fields[name];
+    // Conditional logic
+    const has_cl = fieldHasCL(spec, name);
     if (has_cl) {
       const followed_fields = collect_followed_fields(cl_fields[name]);
       const followed_fields_list = Object.keys(followed_fields);
