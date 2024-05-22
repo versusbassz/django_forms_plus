@@ -74,6 +74,12 @@ export function check_cl_state(cl_groups, followedFieldsState) {
             group_valid = false;
           }
           break;
+        case 'equal':
+          rule_result = followedFieldsState[rule.field] === rule.value;
+          if (! rule_result) {
+            group_valid = false;
+          }
+          break;
         default:
           console.warn(`Unknown conditional logic operator: ${rule.operator}`);
       }
