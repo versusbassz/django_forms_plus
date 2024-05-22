@@ -178,6 +178,9 @@ def get_form_spec(form: DjangoForm) -> FormState:
             case 'Select':
                 field_spec['type'] = 'select'
                 field_spec['choices'] = widget.choices
+            case 'RadioSelect':
+                field_spec['type'] = 'radio'
+                field_spec['choices'] = widget.choices
             case 'ClearableFileInput':
                 field_spec['type'] = 'image'
                 field_spec['checkbox_name'] = widget.clear_checkbox_name(name)
