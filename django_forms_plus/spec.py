@@ -1,26 +1,42 @@
-from django.db.models.fields.files import ImageFieldFile
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .types import (
+        DjangoForm, FieldSpecsDict, FieldSpec,
+        FieldsetSpecList, FieldsetSpec, FieldsetFieldList,
+        ValidatorSpec, HiddenFields, ImageFileInfo,
+    )
 
-from .types import DjangoForm, FormState, FormSpec, FormData
+
+from django.forms import BoundField
+from django.db.models.fields.files import ImageFieldFile
+from django.core.validators import RegexValidator
+
+from .form_helper import Helper
+from .types import FormState, FormSpec, FormData
 from .errors import get_global_error_messages, get_error_message
 from .layout import LayoutItem
 
 
 def get_form_spec(form: DjangoForm) -> FormState:
+    if not hasattr(form, 'helper') or not isinstance(form.helper, Helper):
+        raise TypeError('The form MUST have "helper" attr of Helper (sub-)class')
+
     if form.helper.spec is not None:  # caching
         # TODO probably, it's better to move the building logic
         #      to a separate build_form_spec() function and keep caching logic here
         # TODO do we need to clear the cache somehow ??? (an func argument / method of an object)
         return form.helper.spec
 
-    helper = form.helper
+    helper: Helper = form.helper
 
     # we need to process bound fields to act closely to the original Django forms logic
     # see django.forms.forms.BaseForm.__iter__
     #     (it's an entry point during rendering forms in templates)
-    bound_fields = {f_name: form[f_name] for f_name in form.fields}
+    bound_fields: dict[str, BoundField] = {f_name: form[f_name] for f_name in form.fields}
 
-    fields = {}
-    hidden_fields = []
+    fields: FieldSpecsDict = {}
+    hidden_fields: HiddenFields = []
     for name, bound_field in bound_fields.items():
         field = bound_field.field
         field_name = field.dfp_field_name if hasattr(field, 'dfp_field_name') else type(field).__name__
@@ -28,7 +44,7 @@ def get_form_spec(form: DjangoForm) -> FormState:
         widget = bound_field.field.widget
         widget_name = widget.dfp_widget_name if hasattr(widget, 'dfp_widget_name') else type(widget).__name__
 
-        field_spec = {
+        field_spec: FieldSpec = {
             'name': name,
             'label': str(field.label),
             'help_text': str(field.help_text),
@@ -238,11 +254,12 @@ def get_form_spec(form: DjangoForm) -> FormState:
     return form_state
 
 
-def _get_fieldsets_spec(meta, fields_spec: dict) -> list:
+def _get_fieldsets_spec(meta: Helper, fields_spec: FieldSpecsDict) -> FieldsetSpecList:
+    fieldsets: FieldsetSpecList
     if hasattr(meta, 'fieldsets') and len(meta.fieldsets):
         fieldsets = []
         for fieldset_spec in meta.fieldsets:
-            fieldset = {}
+            fieldset: FieldsetSpec = {}
             if 'title' in fieldset_spec:
                 fieldset['title'] = str(fieldset_spec['title'])
             if 'desc' in fieldset_spec:
@@ -262,8 +279,8 @@ def _get_fieldsets_spec(meta, fields_spec: dict) -> list:
     return fieldsets
 
 
-def _transform_fieldset_fields(fields: list) -> list:
-    result = []
+def _transform_fieldset_fields(fields: list) -> FieldsetFieldList:
+    result: FieldsetFieldList = []
     for field in fields:
         # TODO raise if field is not in fields list
         #      it will require to transform get_form_spec() to a class
@@ -275,8 +292,8 @@ def _transform_fieldset_fields(fields: list) -> list:
     return result
 
 
-def transform_image_field_file(file: ImageFieldFile | None) -> dict:
-    data = {
+def transform_image_field_file(file: ImageFieldFile | None) -> ImageFileInfo:
+    data: ImageFileInfo = {
         'exists': False,
         'url': '',
     }
