@@ -77,10 +77,15 @@ def json_success_modelform_response(
 def json_fail_response(
     form: forms.BaseForm
 ) -> JsonResponse:
-    return JsonResponse(JsonFormResponse(
+    # TODO I've forgotten an exact issue led to this dict comprehension, unfortunately
+    #      probably it was a typical issue about StrOrPromise conversion to JSON
+    #      revisit this code later
+    errors = {field_name: [str(s) for s in errors_list] for field_name, errors_list in form.errors.items()}
+    response_data = JsonFormResponse(
         status='fail',
-        errors=form.errors,
-    ).model_dump())
+        errors=errors,
+    ).model_dump()
+    return JsonResponse(response_data)
 
 
 def json_fail_common_response(errors: Sequence) -> JsonResponse:
