@@ -50,7 +50,7 @@ class FieldSpec(TypedDict):
     suggestions: NotRequired[Any]  # type=slug  # TODO type
     input_format: NotRequired[Any]  # type=text  # TODO type
     label_hint: NotRequired[str]  # type=checkbox
-    choices: NotRequired[list[list[str]]]  # type=select  # TODO tuple[str, str] instead ??
+    choices: NotRequired[list[list[str | int]]]  # type=select  # TODO tuple[str, str] instead ??
     checkbox_name: NotRequired[Any]  # type=image  # TODO type
     checkbox_id: NotRequired[Any]  # type=image  # TODO type
     expected_width: NotRequired[Any]  # type=image  # TODO type

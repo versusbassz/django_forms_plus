@@ -1,9 +1,10 @@
 # Conditional logic
 
 Details on the current behaviour:
-- If CL rules are not satisfied for a field => its HTML nodes are removed from DOM completely.
+- If CL rules are not satisfied for a field => its HTML nodes are removed from DOM completely
 - If a field was hidden be CL and displayed back after that => its entered value is preserved
-- If a field hidden by CL was submitted => its value is removed in DB
+- If a field hidden by CL was submitted => its value is removed in DB  
+    (idea) probably, it's a good feature to preserve some hidden values on Model.save()
 
 The structure for versions `>= 0.9.0`:
 ```python
