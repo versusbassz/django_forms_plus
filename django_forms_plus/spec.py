@@ -88,16 +88,15 @@ def get_form_spec(form: DjangoForm) -> FormState:
 
         # Validators
         field_spec['validators'] = []
-        has_custom_validators = hasattr(helper, 'validators')
+
         match field_name:
             case 'CharField':
                 if hasattr(field, 'max_length') and field.max_length:
-                    field_spec['validators'].append({'name': 'max_length', 'type': 'max_length',
-                                                     'value': field.max_length})
+                    field_spec['validators'].append(_get_str_length_validator(field=field, name='max_length'))
                 if hasattr(field, 'min_length') and field.min_length:
-                    field_spec['validators'].append({'name': 'min_length', 'type': 'min_length',
-                                                     'value': field.min_length})
+                    field_spec['validators'].append(_get_str_length_validator(field=field, name='min_length'))
 
+        has_custom_validators = hasattr(helper, 'validators')
         if has_custom_validators and name in helper.validators:
             for validator in helper.validators[name]:
                 if validator['name'] == 'required':
@@ -108,16 +107,31 @@ def get_form_spec(form: DjangoForm) -> FormState:
 
                 validator_value = validator['value']
                 if validator_type == 'regexp':
-                    # unwrap django.utils.regex_helper._lazy_re_compile()
-                    # called in RegexValidator.__init__() for RegexValidator.regexp
-                    validator_value = str(validator_value)
+                    if isinstance(validator['value'], str):
+                        # validator['value'] as str (a pattern) is allowed
+                        pass
+                    else:
+                        # The important moments here:
+                        # 1. if validator['value'] is not a string we expect it's a re.Pattern
+                        # 2. django.core.validators.RegexValidator uses lazy logic
+                        #    via django.utils.regex_helper._lazy_re_compile()
+                        #    called in RegexValidator.__init__() for RegexValidator.regexp
+                        #    So we unwrap it and uses "Re.pattern" attr explicitly
+                        # 3. Pydantic v1 transforms re.Pattern to str during BaseModel.json()
+                        #    -
+                        #    Pydantic v2 just applies str() to a regexp.
+                        #    That is incorrect for our case that's why we transform the regexp to str explicitly
+                        #    just by using "pattern" attr
+                        if not hasattr(validator_value, 'pattern'):
+                            raise TypeError(f're.Pattern expected, got {type(validator_value)}')
+                        validator_value = validator_value.pattern
 
-                cur_validator = {
+                cur_validator: ValidatorSpec = {
                     'name': validator['name'],
                     'type': validator_type,
                     'value': validator_value,
                     'inverse': validator['inverse'] if 'inverse' in validator else False,
-                    'allow_empty': validator['allow_empty'] if 'allow_empty' in validator else False,
+                    'allow_empty': validator['allow_empty'] if 'allow_empty' in validator else False,  # TODO is this condition correct  # noqa: E501
                     'message': str(validator['message']) if 'message' in validator else None,
                 }
                 field_spec['validators'].append(cur_validator)
@@ -137,18 +151,35 @@ def get_form_spec(form: DjangoForm) -> FormState:
 
                 validator_value = validator['value'] if 'value' in validator else None
                 if validator_type == 'regexp':
-                    # unwrap django.utils.regex_helper._lazy_re_compile()
-                    # called in RegexValidator.__init__() for RegexValidator.regexp
-                    validator_value = str(validator_value)
+                    if isinstance(validator['value'], str):
+                        # validator['value'] as str (a pattern) is allowed
+                        pass
+                    else:
+                        # The important moments here:
+                        # 1. if validator['value'] is not a string we expect it's a re.Pattern
+                        # 2. django.core.validators.RegexValidator uses lazy logic
+                        #    via django.utils.regex_helper._lazy_re_compile()
+                        #    called in RegexValidator.__init__() for RegexValidator.regexp
+                        #    So we unwrap it and uses "Re.pattern" attr explicitly
+                        # 3. Pydantic v1 transforms re.Pattern to str during BaseModel.json()
+                        #    -
+                        #    Pydantic v2 just applies str() to a regexp.
+                        #    That is incorrect for our case that's why we transform the regexp to str explicitly
+                        #    just by using "pattern" attr
+                        if not hasattr(validator_value, 'pattern'):
+                            raise TypeError(f're.Pattern expected, got {type(validator_value)}')
+                        validator_value = validator_value.pattern
 
-                field_spec['soft_validators'].append({
+                soft_validator: ValidatorSpec = {  # for mypy
                     'name': validator['name'],
                     'type': validator_type,
                     'value': validator_value,
                     'inverse': validator['inverse'] if 'inverse' in validator else False,
                     'allow_empty': validator['allow_empty'] if 'allow_empty' in validator else False,
                     'message': str(validator['message']),  # a message is required for now
-                })
+                }
+
+                field_spec['soft_validators'].append(soft_validator)
 
         # attr: css_classes
         if hasattr(widget, 'css_classes') and isinstance(widget.css_classes, dict):
@@ -301,3 +332,29 @@ def transform_image_field_file(file: ImageFieldFile | None) -> ImageFileInfo:
         data['exists'] = True
         data['url'] = file.url
     return data
+
+
+def _get_str_length_validator(field: BoundField, name: str) -> ValidatorSpec:
+    if name not in ['min_length', 'max_length']:
+        raise ValueError(f'incorrect name: {name}')
+    return {
+        'name': 'max_length',
+        'type': 'max_length',
+        'value': getattr(field, name),
+        'inverse': False,
+        'allow_empty': False,
+        'message': '',
+    }
+
+
+def prepare_regexp_validator(validator: RegexValidator, allow_empty: bool = False,
+                             inverse: bool = False) -> ValidatorSpec:
+    result: ValidatorSpec = {
+        'type': 'regexp',
+        'name': validator.code,
+        'value': validator.regex,
+        'allow_empty': allow_empty,
+        'inverse': inverse,
+        'message': validator.message,
+    }
+    return result

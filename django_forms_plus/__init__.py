@@ -2,7 +2,7 @@
 from .types import (FormSpec, FormState, FormData, DjangoForm,
                     JsonFormResponse, FormResponseAction)
 from .widgets import CaptchaInput
-from .spec import get_form_spec
+from .spec import get_form_spec, prepare_regexp_validator
 from .forms import DfpFormMixin, CompositeForm
 from .form_helper import Helper
 from .views import (get_form_layout,
