@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState, FC } from "react";
 import classNames from "classnames";
 
-import { FormContext, fieldspec_to_input, FieldError } from "../parts";
+import { useFormContext, fieldspec_to_input, FieldError } from "../parts";
 import { check_cl_state, collect_followed_fields,
          fieldHasCL, getFieldCLGroups } from "../inc/conditional-logic";
 import { validate_soft_errors } from "../inc/validation-soft";
@@ -14,9 +14,9 @@ import { validate_soft_errors } from "../inc/validation-soft";
  */
 function useFieldCL(spec, name, watch) {
   let field_has_cl = fieldHasCL(spec, name);
-  const cl_groups = getFieldClGroups(spec, name);
+  const cl_groups = getFieldCLGroups(spec, name);
 
-  const [followedFields, setFollowedFields] = useState([]);
+  const [followedFields, setFollowedFields] = useState({});
 
   /** @type {followedFieldsStateType} */
   let followedFieldsState = {};
@@ -38,46 +38,54 @@ function useFieldCL(spec, name, watch) {
  * @return {React.FC|null}
  */
 export function FieldSlot({ name }) {
-  const { spec,  rhf: { watch, formState }, focusedField, validateOnStart, loading } = useContext(FormContext);
+  const { spec,  rhf: { watch, formState, trigger }, focusedField, validateOnStart, loading } = useFormContext();
   const field_spec = spec.fields[name];
   const input = fieldspec_to_input(name, field_spec);
 
-  const [field_has_cl, cl_groups, followedFieldsState] = useFieldCL(spec, name, watch);
-
-  const enabled = ! field_has_cl || check_cl_state(cl_groups, followedFieldsState);
-
-  if (! enabled) {return null;}
-
   const value = watch(name);
   const formSubmittedOnce = formState.isSubmitted && ! loading;
-  // const { isTouched } = getFieldState(name);
   const isTouched = name in formState.touchedFields
   const isFocused = focusedField === name;
 
-  const has_errors = formState.errors[name];
+  // Validation
+  const hasErrors = formState.errors[name];
 
-  // Soft errors
-  const has_soft_checks = field_spec.soft_validators?.length;
-  const allow_soft_errors = validateOnStart || isTouched || formSubmittedOnce;
+  // Soft validation
+  const [softErrors, setSoftErrors] = useState([])
+  const hasSoftChecks = field_spec.soft_validators?.length;
+  const allowSoftErrors = validateOnStart || isTouched || formSubmittedOnce;
 
-  let has_soft_errors = false;
-  let soft_errors = [];
-  if (has_soft_checks && allow_soft_errors) {
-    soft_errors = validate_soft_errors(name, field_spec, value);
-    has_soft_errors = !! soft_errors.length;
+  useEffect(function () {
+    // TODO the performance of this solution is quite bad, try to fix it one day
+    if (hasSoftChecks && allowSoftErrors) {
+      const newState = validate_soft_errors(name, field_spec, value);
+      if (JSON.stringify(newState) !== JSON.stringify(softErrors)) { // TODO slow: JSON.stringify comparison
+        setSoftErrors(newState);
+      }
+    }
+  }); // TODO slow: useEffect is triggered on any change
+
+  const hasSoftErrors = !! softErrors.length;
+  const showSoftErrors = ! isFocused && ! hasErrors && hasSoftErrors;
+
+  // Conditional logic
+  // If CL rules are not satisfied for a field => its HTML nodes are removed from DOM completely
+  const [field_has_cl, cl_groups, followedFieldsState] = useFieldCL(spec, name, watch);
+  const enabled = ! field_has_cl || check_cl_state(cl_groups, followedFieldsState);
+  if (! enabled) {
+    return null;
   }
-  const show_soft_errors = ! isFocused && ! has_errors && has_soft_errors;
 
   // CSS
-  const show_valid_class = isTouched && ! isFocused  && ! has_errors && ! show_soft_errors;
+  const show_valid_class = isTouched && ! isFocused  && ! hasErrors && ! showSoftErrors;
 
   const css_classes = {
       'dfp-fieldslot': true,
       'dfp-fieldslot--required': field_spec.required,
       'dfp-fieldslot--focus': isFocused,
       'dfp-fieldslot--valid': show_valid_class,
-      'dfp-fieldslot--invalid': has_errors,
-      'dfp-fieldslot--softly-invalid': show_soft_errors,
+      'dfp-fieldslot--invalid': hasErrors,
+      'dfp-fieldslot--softly-invalid': showSoftErrors,
   }
 
   if (field_spec.css_classes?.fieldslot) {
@@ -97,14 +105,14 @@ export function FieldSlot({ name }) {
              dangerouslySetInnerHTML={{__html: field_spec.help_text}} />
       )}
       <div className={classNames(field_css_classes)}>{input}</div>
-      {has_errors && (
+      {hasErrors && (
         <div className="dfp-fieldslot__errors">
           <FieldError name={name} />
         </div>
       )}
-      {show_soft_errors ? (
+      {showSoftErrors ? (
         <div className="dfp-fieldslot__soft-errors">
-          {soft_errors.map((err, index) => (
+          {softErrors.map((err, index) => (
             <div key={index}>{err}</div>
           ))}
         </div>
