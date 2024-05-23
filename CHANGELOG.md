@@ -3,6 +3,25 @@ Sections: Spec, Features, Backend, Frontend
 
 # The changelog
 
+## 0.13.0 - 2024.05.23
+
+new, feature: Add RadioSelect field
+new, spec, feature: Add conditional logic for fieldsets
+new, spec: Add "equal" conditional logic rule
+bc, spec: Implement "Conditional logic" spec format v2 (more flatten and simple)
+new: add prepare_regexp_validator() py-helper
+
+fix: Handle "payload" param better in json_success_response() py-helper
+fix: Fix how pydantic v2 handles regexps (2nd attempt)
+fix: Adjust the logic of json_fail_response() py-helper
+fix: Fix the bug when soft_validators are applied before actual initial values are set to fields
+
+dev: Add useFormContext() hook
+dev, tests: Add the simplest e2e tests setup ("pytest" + "pytest-playwright" py-packages)
+dev: Update dev_site codebase
+refactor: Add more Python types for project's entries and fix some typing issues
+...
+
 ## 0.12.2 - 2024.05.03
 
 fix: Fix FormattedInput.attrs
