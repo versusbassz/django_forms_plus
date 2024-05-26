@@ -20,6 +20,9 @@ front.watch:
 front.build:
 	npx webpack --mode=production
 
+front.check-types:
+	npx tsc --noEmit
+
 front.profile:
 	mkdir -p ./build
 	npx webpack --mode=production --profile --json > build/stats.json && npx webpack-bundle-analyzer build/stats.json

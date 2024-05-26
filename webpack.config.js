@@ -19,23 +19,28 @@ module.exports = (env, argv) => {
 
   const entry = isModeProduction ? 'dist' : 'dev'
 
+  // Paths
+  const srcPath = path.resolve(__dirname, 'front/src');
+
   return {
     mode,
-    entry: `./front/src/${entry}.js`,
+    entry: `./front/src/${entry}.tsx`,
     output: {
       filename: 'dfp.build.js',
       path: path.resolve(__dirname, './django_forms_plus/static/django_forms_plus'),
       clean: true,
     },
     devtool: sourceMaps,
+    resolve: {
+      // see https://webpack.js.org/configuration/resolve/#resolveextensions
+      extensions: ['.tsx', '.ts', '.jsx', '.js'],
+    },
     module: {
       rules: [
         {
-          test: /\.js$/,
+          test: /\.(ts|tsx|js|jsx)$/,
           exclude: '/node_modules/',
-          include: [
-            path.resolve(__dirname, 'front/src'),
-          ],
+          include: [srcPath],
           use: {
             loader: 'babel-loader',
           },
