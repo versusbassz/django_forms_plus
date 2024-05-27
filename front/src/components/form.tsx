@@ -59,6 +59,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
     const event = new CustomEvent('dfp:init', {
       detail: {
         form_id: spec.id,
+        form_context: context,
       },
     });
     document.dispatchEvent(event);
