@@ -3,6 +3,15 @@ Sections: Spec, Features, Backend, Frontend
 
 # The changelog
 
+## 0.14.0 - 2024.05.27
+
+new, js: Add DfpFormContext.rhf.getValues
+enhancement, js: Add detail.form_context for dfp:init event
+docs: Add docs about JS events
+
+dev, js: Add debugCount, setDebugCount to the DfpFormContext
+dev: Move JS codebase to TypeScript
+
 ## 0.13.0 - 2024.05.23
 
 new, feature: Add RadioSelect field
