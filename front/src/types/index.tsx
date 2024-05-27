@@ -111,6 +111,8 @@
  * @property {boolean} validateOnStart - Is validation of a form enabled during page loading
  *                                       (without any action from a user)
  * @property {boolean} debugEnabled - Is debug panel enabled for a form
+ * @property {number} debugCount - for debugging purposes
+ * @property {function} setDebugCount
  */
 
 // TODO window.dfp   see dfp_init_forms()

@@ -28,6 +28,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
 
   const [ commonErrors, setCommonErrors ] = useState([]);
 
+  const [debugCount, setDebugCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [submitResult, setSubmitResult] = useState();
 
@@ -81,6 +82,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
     focusedField: focusedField, setFocusedField: setFocusedField,
     validateOnStart: validateOnStart,
     debugEnabled: debugEnabled,
+    debugCount, setDebugCount,
   };
   const fieldsets = spec.fieldsets;
 
