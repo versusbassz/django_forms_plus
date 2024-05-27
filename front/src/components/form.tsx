@@ -14,7 +14,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
 
   const validation_schema = build_validation_schema(spec, i18n_phrases);
   const {
-    handleSubmit, reset, register, watch, control, setValue, trigger, formState, getFieldState,
+    handleSubmit, reset, register, watch, control, setValue, getValues, trigger, formState, getFieldState,
     clearErrors,
   } = useForm({
     resolver: yupResolver(validation_schema),
@@ -75,7 +75,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
   /** @type {import("../types").DfpFormContext} */
   const context = {
     spec: spec,
-    rhf: { register, watch, trigger, control, formState, getFieldState, setValue, clearErrors },
+    rhf: { register, watch, trigger, control, formState, getFieldState, setValue, getValues, clearErrors },
     loading: loading,
     submitResult: submitResult,
     setSuccessMsg, closeSuccessMsg,

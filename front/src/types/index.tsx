@@ -95,6 +95,7 @@
  * @property {function} formState
  * @property {function} getFieldState
  * @property {function} setValue
+ * @property {function} getValues
  * @property {function} clearErrors
  */
 
