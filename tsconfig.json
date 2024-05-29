@@ -11,6 +11,5 @@
 
     "noImplicitAny": true
   },
-  "include": ["front/src/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["front/src/**/*"]
 }
