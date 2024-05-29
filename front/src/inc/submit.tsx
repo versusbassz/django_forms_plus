@@ -1,18 +1,35 @@
-import { sprintf } from "./utils";
+import React from "react";
 
-export async function submitForm(data, e, { fields, i18n_phrases }, context, reset, setValue,
-                                 setCommonErrors, setLoading, setSubmitResult,
-) {
+import { DfpFormContext, JsonFormResponse } from "../types";
+import { sprintf } from "./utils";
+import { dumpFormData } from "../components/debug";
+
+/**
+ * The "SubmitHandler" param of useForm().handleSubmit function
+ *
+ * @link https://react-hook-form.com/docs/useform/handlesubmit
+ */
+export async function submitForm(
+    data: Object,
+    e: React.BaseSyntheticEvent,
+    context: DfpFormContext,
+    reset: Function, // for further features in submit logic. don't remove
+    setCommonErrors: Function,
+    setLoading: Function,
+    setSubmitResult: Function,
+): Promise<void> {
   console.log('SUBMIT - START');
 
-  const form = e.target
-  const {spec} = context
+  const { spec } = context;
+  const { fields, i18n_phrases } = spec;
+
+  const form = e.target;
 
   const form_data = new FormData(form); // TODO what's with files uploading ???\
 
   console.log('## Form request');
   console.log('rhf_data:', data);
-  console.table(Object.fromEntries(form_data));
+  dumpFormData(form_data);
 
   context.closeSuccessMsg();
 
@@ -36,7 +53,7 @@ export async function submitForm(data, e, { fields, i18n_phrases }, context, res
     return;
   }
 
-  let response;
+  let response: JsonFormResponse;
   try {
     response = await response_raw.json();
   } catch (e) {
@@ -59,7 +76,7 @@ export async function submitForm(data, e, { fields, i18n_phrases }, context, res
           if (fields[key].type === 'image') {
             value = '';
           }
-          setValue(key, value, { shouldValidate: true });
+          context.rhf.setValue(key, value, { shouldValidate: true });
         });
       } else {
         // should we really reset if a payload is an empty object ???
@@ -71,7 +88,7 @@ export async function submitForm(data, e, { fields, i18n_phrases }, context, res
       break;
     case 'fail':
       console.info('FAIL')
-      let errors = [];
+      let errors: string[] = [];
       if (response?.errors && Object.keys(response?.errors)?.length) {
         const error_keys = Object.keys(response.errors);
         error_keys.forEach(key => {
@@ -87,7 +104,7 @@ export async function submitForm(data, e, { fields, i18n_phrases }, context, res
   }
 }
 
-function do_action(response, form_context) {
+function do_action(response: JsonFormResponse, form_context: DfpFormContext): void {
   console.log('Response:', response);
   const action = response.result_action
   switch (action.type) {
@@ -120,7 +137,7 @@ function do_action(response, form_context) {
   }
 }
 
-function emit_onsubmit_event(form_id) {
+function emit_onsubmit_event(form_id: string): void {
   const event = new CustomEvent('dfp:onsubmit', {
       detail: {form_id},
     });

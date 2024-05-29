@@ -1,7 +1,7 @@
-import { useContext } from "react";
-import { FormContext } from "../parts";
+import { useFormContext } from "../parts";
+import { FieldSpec, SharedRHF } from "../types";
 
-export const useFieldSpec = (name) => {
-  const { spec, rhf } = useContext(FormContext)
+export const useFieldSpec = (name: string): [FieldSpec, SharedRHF] => {
+  const { spec, rhf } = useFormContext();
   return [spec.fields[name], rhf]
 }

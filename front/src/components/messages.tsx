@@ -1,10 +1,13 @@
-import React from "react";
+import { JSX, ReactElement } from "react";
 import classNames from "classnames";
 
 const MESSAGE_TYPE__SUCCESS = 'success';
 const MESSAGE_TYPE__ERROR = 'error';
 
-export function SuccessMessage({close, content = '', externalBlock = ''}) {
+export function SuccessMessage(
+    {close, content = '', externalBlock = ''}:
+    {close: Function, content: string, externalBlock: string}
+): JSX.Element | null {
   let _content = content;
 
   if (externalBlock) {
@@ -27,16 +30,19 @@ export function SuccessMessage({close, content = '', externalBlock = ''}) {
   )
 }
 
-export function ErrorMessage({content = ''}) {
+export function ErrorMessage({content = ''}: {content: string}): JSX.Element {
   if (! content) content = 'Произошла ошибка';
   return (
     <GenericMessage type={MESSAGE_TYPE__ERROR} content={content} />
   )
 }
 
-export function GenericMessage({type, content, children, close}) {
-  const has_close_action = !! close;
-  const onCloseClick = () => close && close();
+export function GenericMessage(
+    {type, content, children = null, close = null}:
+    { type: string, content: string, children?: ReactElement | null, close?: Function | null,}
+): JSX.Element {
+  const has_close_action: boolean = !! close;
+  const onCloseClick: () => void = () => close && close();
   return (
     <div className={classNames(['dfp-message', `dfp-message--${type}`])}>
       {content && (

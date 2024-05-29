@@ -1,25 +1,21 @@
-import React, { useEffect, useState, FC } from "react";
+import { useEffect, useState, JSX } from "react";
 import classNames from "classnames";
 
 import { useFormContext, fieldspec_to_input, FieldError } from "../parts";
 import { check_cl_state, collect_followed_fields,
          fieldHasCL, getFieldCLGroups } from "../inc/conditional-logic";
 import { validate_soft_errors } from "../inc/validation-soft";
+import { CLSpec, FollowedCLFields, followedFieldsStateType, FormSpec } from "../types";
 
-/**
- * @param {import("../types").FormSpec} spec
- * @param {string} name
- * @param {function} watch
- * @return {[boolean, import("../types").FollowedCLFields, followedFieldsStateType]}
- */
-function useFieldCL(spec, name, watch) {
+
+function useFieldCL(spec: FormSpec, name: string, watch: Function
+): [boolean, CLSpec, followedFieldsStateType] {
   let field_has_cl = fieldHasCL(spec, name);
   const cl_groups = getFieldCLGroups(spec, name);
 
-  const [followedFields, setFollowedFields] = useState({});
+  const [followedFields, setFollowedFields] = useState<FollowedCLFields>({} as FollowedCLFields);
 
-  /** @type {followedFieldsStateType} */
-  let followedFieldsState = {};
+  let followedFieldsState: followedFieldsStateType = {};
   Object.keys(followedFields).forEach(item => {followedFieldsState[item] = watch(item);});
 
   useEffect(() => {
@@ -32,13 +28,8 @@ function useFieldCL(spec, name, watch) {
 }
 
 
-/**
- * @param {Object} props
- * @param {string} props.name
- * @return {React.FC|null}
- */
-export function FieldSlot({ name }) {
-  const { spec,  rhf: { watch, formState, trigger }, focusedField, validateOnStart, loading } = useFormContext();
+export function FieldSlot({ name }: {name: string}): JSX.Element | null {
+  const { spec,  rhf: { watch, formState }, focusedField, validateOnStart, loading } = useFormContext();
   const field_spec = spec.fields[name];
   const input = fieldspec_to_input(name, field_spec);
 
@@ -48,12 +39,12 @@ export function FieldSlot({ name }) {
   const isFocused = focusedField === name;
 
   // Validation
-  const hasErrors = formState.errors[name];
+  const hasErrors: boolean = !! formState.errors[name]; // TODO IS IT CORRECT ???
 
   // Soft validation
   const [softErrors, setSoftErrors] = useState([])
-  const hasSoftChecks = field_spec.soft_validators?.length;
-  const allowSoftErrors = validateOnStart || isTouched || formSubmittedOnce;
+  const hasSoftChecks: boolean = !! field_spec.soft_validators?.length;
+  const allowSoftErrors: boolean = validateOnStart || isTouched || formSubmittedOnce;
 
   useEffect(function () {
     // TODO the performance of this solution is quite bad, try to fix it one day
@@ -65,21 +56,21 @@ export function FieldSlot({ name }) {
     }
   }); // TODO slow: useEffect is triggered on any change
 
-  const hasSoftErrors = !! softErrors.length;
-  const showSoftErrors = ! isFocused && ! hasErrors && hasSoftErrors;
+  const hasSoftErrors: boolean = !! softErrors.length;
+  const showSoftErrors: boolean = ! isFocused && ! hasErrors && hasSoftErrors;
 
   // Conditional logic
   // If CL rules are not satisfied for a field => its HTML nodes are removed from DOM completely
   const [field_has_cl, cl_groups, followedFieldsState] = useFieldCL(spec, name, watch);
-  const enabled = ! field_has_cl || check_cl_state(cl_groups, followedFieldsState);
+  const enabled: boolean = ! field_has_cl || check_cl_state(cl_groups, followedFieldsState);
   if (! enabled) {
     return null;
   }
 
   // CSS
-  const show_valid_class = isTouched && ! isFocused  && ! hasErrors && ! showSoftErrors;
+  const show_valid_class: boolean = isTouched && ! isFocused  && ! hasErrors && ! showSoftErrors;
 
-  const css_classes = {
+  const css_classes: Record<string, boolean> = {
       'dfp-fieldslot': true,
       'dfp-fieldslot--required': field_spec.required,
       'dfp-fieldslot--focus': isFocused,

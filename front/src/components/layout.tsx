@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, JSX } from "react";
 
-export function ExternalHtml({itemSpec}) {
-  const [content, setContent] = useState('');
+import { LayoutItemSpec } from "../types";
+
+export function ExternalHtml({ itemSpec }: {itemSpec: LayoutItemSpec}): JSX.Element | null {
+  const [content, setContent] = useState<string>('');
 
   useEffect(() => {
     const dom_node = document.querySelector(itemSpec.selector);

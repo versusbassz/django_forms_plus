@@ -1,7 +1,8 @@
-import React, { useState } from "react"
+import { JSX, useState } from "react"
+import { FormSpec } from "../types";
 
-export function DebugPanel({spec}) {
-  const [opened, setOpened] = useState(false)
+export function DebugPanel({spec}: {spec: FormSpec}): JSX.Element {
+  const [opened, setOpened] = useState<boolean>(false)
   const OpenButton = () => <button type="button" onClick={() => setOpened(! opened)}>open/close</button>;
   return (
     <div className="dfp-debug-panel" style={{margin: '20px 0 40px 0'}}>
@@ -18,12 +19,7 @@ export function DebugPanel({spec}) {
   );
 }
 
-/**
- *
- * @param {string} name
- * @param {*} value
- */
-export function dumpVar(name, value) {
+export function dumpVar(name: string, value: any): void {
   const specialClasses = [
     HTMLElement,
   ];
@@ -42,4 +38,15 @@ export function dumpVar(name, value) {
   } else {
     console.log(`[${name}]`, typeof value, '#', value);
   }
+}
+
+/**
+ * @link https://developer.mozilla.org/en-US/docs/Web/API/console/table_static
+ */
+export function dumpFormData(data: FormData): void {
+  const formDataArray: Object[] = [];
+  data.forEach((value, key) => {
+      formDataArray.push({ key, value });
+  });
+  console.table(formDataArray);
 }

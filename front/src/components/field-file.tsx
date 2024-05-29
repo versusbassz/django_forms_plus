@@ -12,19 +12,26 @@
  * @see {https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/accept}
  */
 
-import React, { useContext, useEffect, useRef, useState } from "react";
-import ReactCrop from "react-image-crop";
+import React, { useEffect, useRef, useState, BaseSyntheticEvent, JSX } from "react";
+import ReactCrop, { Crop, PercentCrop } from "react-image-crop";
 import ModalUnstyled from "@mui/base/ModalUnstyled";
 
 import { useFieldSpec } from "../inc/hooks";
-import { FormContext } from "../inc/context";
+import { useFormContext } from "../inc/context";
 import { useFieldAttrs } from "./fields";
 import classNames from "classnames";
+import { FieldSpec } from "../types";
 
 
-const initialCrop = {unit: 'px', x: 0, y: 0, width: 50, height: 50};
+type PreviewDebugInfo = {
+  width: number,
+  height: number,
+  size: number,
+};
 
-export function ImageUpload({name}) {
+const initialCrop: Crop = {unit: 'px', x: 0, y: 0, width: 50, height: 50};
+
+export function ImageUpload({name}: {name: string}): JSX.Element {
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   const [field_spec, _] = useFieldSpec(name);
 
@@ -59,11 +66,11 @@ export function ImageUpload({name}) {
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewSrc, setPreviewSrc] = useState('');
-  const [previewDebugInfo, setPreviewDebugInfo] = useState('');
+  const [previewDebugInfo, setPreviewDebugInfo] = useState<PreviewDebugInfo>({} as PreviewDebugInfo);
 
-  const onPreviewLoad = (e) => {
+  const onPreviewLoad = (e: BaseSyntheticEvent): void => {
     const target = e.target;
-    const data = {
+    const data: PreviewDebugInfo = {
       width: target.naturalWidth,
       height: target.naturalHeight,
       size: target.size,
@@ -71,18 +78,18 @@ export function ImageUpload({name}) {
     setPreviewDebugInfo(data);
   }
 
-  const { submitResult, debugEnabled } = useContext(FormContext);
+  const { submitResult, debugEnabled } = useFormContext();
   const submitFieldValue = submitResult && submitResult[name] ? submitResult[name] : null;
 
   // dont display the button for now
   const [showCropChangeButton, setShowCropChangeButton] = useState(false);
 
-  const [crop, setCrop] = useState(initialCrop);
+  const [crop, setCrop] = useState<Crop>(initialCrop);
   const [showCropModal, setShowCropModal] = useState(false);
   const [showCropCancelButton, setShowCropCancelButton] = useState(false);
 
   // setSelectedFile onChange input:file
-  const inputOnChange = (e) => {
+  const inputOnChange = (e: BaseSyntheticEvent): void => {
     console.log('input onChange', e);
     if (! e.target.files || e.target.files.length === 0) {
         setSelectedFile(null);
@@ -152,7 +159,7 @@ export function ImageUpload({name}) {
     const img = new Image();
     img.src = previewSrc;
     img.onload = async () => {
-      const blob = await getCroppedImg(img, crop, field_spec);
+      const blob = await getCroppedImg(img, crop as PercentCrop, field_spec); // TODO dirty, type "crop" as PercentCrop only
       URL.revokeObjectURL(selectedFile);
 
       const newUrl = URL.createObjectURL(blob);
@@ -181,7 +188,7 @@ export function ImageUpload({name}) {
   };
 
   // const _inputAttrs = rhf.register(name, {...rhf_options, onChange: inputOnChange});
-  function setInputRef (elem) {
+  function setInputRef (elem: HTMLElement): void {
      // see: https://react-hook-form.com/faqs#Howtosharerefusage
      // ref(elem);
      inputRef.current = elem;
@@ -268,11 +275,6 @@ export function ImageUpload({name}) {
 }
 
 /**
- * @param {HTMLImageElement} image
- * @param {import("react-image-crop").PercentCrop} crop
- * @param {object} field_spec
- * @return {Promise<Blob>}
- *
  * @see {https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D}
  * @see {https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage}
  * @see {https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setTransform}
@@ -282,7 +284,7 @@ export function ImageUpload({name}) {
  *
  * @see {https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/Image}
  */
-function getCroppedImg(image, crop, field_spec) {
+function getCroppedImg(image: HTMLImageElement, crop: PercentCrop, field_spec: FieldSpec): Promise<Blob> {
   const { expected_width, expected_height } = field_spec;
 
   const nat_w = image.naturalWidth;
@@ -316,7 +318,7 @@ function getCroppedImg(image, crop, field_spec) {
   );
 
   return new Promise((resolve, reject) => {
-    const handleBlob = blob => {
+    const handleBlob = (blob: Blob | null): void => { // interface BlobCallback
         if (! blob) {
           console.error('Canvas is empty');
           reject(new Error('Canvas is empty'));
@@ -330,12 +332,7 @@ function getCroppedImg(image, crop, field_spec) {
   });
 }
 
-/**
- * @param {number} width
- * @param {number} height
- * @return {number}
- */
-function getQualityValue(width, height) {
+function getQualityValue(width: number, height: number): number {
   const target_val = width > height ? width : height;
 
   if (target_val < 500) return 0.6;
@@ -344,10 +341,7 @@ function getQualityValue(width, height) {
   return 0.15;
 }
 
-/**
- * @param {string} value
- * @return {boolean}
- */
-function isBlobUrl(value) {
+// TODO maybe add a special type BlobURL and make this function as typeguard?
+function isBlobUrl(value: any): boolean {
   return typeof value === 'string' && value.startsWith('blob');
 }

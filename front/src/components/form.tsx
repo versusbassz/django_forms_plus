@@ -8,20 +8,34 @@ import { DebugPanel, SuccessMessage,
          InputHidden, Submit, SubmitIndicator,
          Fieldset, FieldsetFull, FieldsetSimple } from "../parts";
 import { i18n_phrases as default_i18n_phrases } from "../inc/i18n";
+import { DfpFormContext, DfpFormValues, FormSpec, I18nPhrases, RhfDevtoolBuilder } from "../types";
 
-export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) {
-  const i18n_phrases = Object.keys(spec.i18n_phrases).length ? spec.i18n_phrases : default_i18n_phrases;
+type SuccessMessageState = {
+  content: string,
+  position: string;
+  externalBlock: string;
+};
+
+export type FormParams = {
+  spec: FormSpec;
+  csrf_token: string;
+  buildDevtool?: RhfDevtoolBuilder;
+  debug_enabled?: boolean;
+};
+
+export function Form({spec, csrf_token, buildDevtool = null, debug_enabled = false}: FormParams) {
+  const i18n_phrases: I18nPhrases = Object.keys(spec.i18n_phrases).length ? spec.i18n_phrases : default_i18n_phrases;
 
   const validation_schema = build_validation_schema(spec, i18n_phrases);
   const {
     handleSubmit, reset, register, watch, control, setValue, getValues, trigger, formState, getFieldState,
     clearErrors,
-  } = useForm({
+  } = useForm<DfpFormValues>({
     resolver: yupResolver(validation_schema),
   });
 
-  const [ successMsg, _setSuccessMsg ] = useState(null);
-  const setSuccessMsg = (content, position = 'bottom', externalBlock = '') => {
+  const [ successMsg, _setSuccessMsg ] = useState<SuccessMessageState | null>(null);
+  const setSuccessMsg = (content: string, position: string = 'bottom', externalBlock: string = ''): void => {
     _setSuccessMsg({content, position, externalBlock});
   };
   const closeSuccessMsg = () => _setSuccessMsg(null);
@@ -36,7 +50,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
   const [validateOnStart, setValidateOnStart] = useState(false);
 
   const validate_on_start = () => {
-    for (const [key, value] of Object.entries(spec.fields)) {
+    for (const [key, _] of Object.entries(spec.fields)) {
       trigger(key);
     }
     setValidateOnStart(true);
@@ -73,8 +87,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
     }
   }, []);
 
-  /** @type {import("../types").DfpFormContext} */
-  const context = {
+  const context: DfpFormContext = {
     spec: spec,
     rhf: { register, watch, trigger, control, formState, getFieldState, setValue, getValues, clearErrors },
     loading: loading,
@@ -85,14 +98,10 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
     debugEnabled: debugEnabled,
     debugCount, setDebugCount,
   };
-  const fieldsets = spec.fieldsets;
 
-  const onSubmit = (data, e) => {
-    submitForm(
-      data, e, spec, context, reset, setValue,
-      setCommonErrors, setLoading, setSubmitResult, i18n_phrases,
-    );
-  }
+  const onSubmit = async (data: Object, e: React.BaseSyntheticEvent): Promise<void> => {
+    await submitForm(data, e, context, reset, setCommonErrors, setLoading, setSubmitResult);
+  };
 
   return (
     <FormContext.Provider value={context}>
@@ -126,7 +135,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
             )}
 
             {/* Fieldsets */}
-            {fieldsets.map((_, index) => {
+            {spec.fieldsets.map((_, index) => {
                 return <Fieldset key={index} index={index} />
             })}
 
@@ -154,7 +163,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
             )}
 
             {/* "Submit" button */}
-            <FieldsetFull key={fieldsets.length}>
+            <FieldsetFull key={spec.fieldsets.length}>
               <Submit button_text={spec.button_text} />
             </FieldsetFull>
 
@@ -162,7 +171,7 @@ export function Form({spec, csrf_token, devtool = null, debug_enabled = false}) 
         </form>
 
         {/* "react-hook-form" - debugging widget */}
-        {devtool && devtool(control)}
+        {buildDevtool && buildDevtool(control)}
       </div>
     </FormContext.Provider>
   )

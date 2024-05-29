@@ -1,12 +1,8 @@
-/**
- *
- * @param {string} name
- * @param {import("../types").FieldSpec} field_spec
- * @param {*} value
- * @return {string[]}
- */
-export function validate_soft_errors(name, field_spec, value) {
-    const errors = [];
+import { FieldSpec } from "../types";
+
+
+export function validate_soft_errors(name: string, field_spec: FieldSpec, value: any): string[] {
+    const errors: string[] = [];
 
     for (const check of field_spec.soft_validators) {
       switch (check.type) {

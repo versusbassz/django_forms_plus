@@ -1,11 +1,9 @@
-import React, { createContext, useContext } from "react";
+import { createContext, useContext } from "react";
 
-export const FormContext = createContext({});
+import { DfpFormContext } from "../types";
 
+export const FormContext = createContext<DfpFormContext>({} as DfpFormContext); // dirty, but should work
 
-/**
- * @return {import("../types").DfpFormContext}
- */
-export const useFormContext = () => {
+export const useFormContext = (): DfpFormContext => {
   return useContext(FormContext);
 };

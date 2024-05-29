@@ -1,21 +1,13 @@
-import React, { useContext } from "react";
+import React, { JSX } from "react";
 
-import { FormContext } from "../parts";
+import { useFormContext } from "../parts";
 
-export function FieldError({name}) {
-  const {rhf: {formState: {errors}}} = useContext(FormContext)
 
-  if (! errors[name]) return null;
-  return (
-    errors[name] && <div className="dfp-field-error">{errors[name].message}</div>
-  )
+export function FieldError({ name }: {name: string}): JSX.Element | null {
+  const {rhf: {formState: {errors}}} = useFormContext();
+  return errors[name] ? <Error>{errors[name].message as string}</Error> : null; // dirty
 }
 
-export function FieldSoftError({name}) {
-  const {rhf: {formState: {errors}}} = useContext(FormContext)
-
-  if (! errors[name]) return null;
-  return (
-    errors[name] && <div className="dfp-field-error">{errors[name].message}</div>
-  )
+function Error({ children }: { children: React.ReactNode }): JSX.Element {
+  return <div className="dfp-field-error">{children}</div>;
 }

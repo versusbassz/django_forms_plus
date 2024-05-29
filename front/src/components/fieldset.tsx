@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { ReactElement, useState, useEffect, JSX } from "react";
 
 import { useFormContext, FieldSlot, ExternalHtml } from '../parts'
 import { isString } from "../inc/utils";
 import classNames from "classnames";
 import { check_cl_state, collect_followed_fields } from "../inc/conditional-logic";
+import { followedFieldsStateType, LayoutItemSpec } from "../types";
 
 
-const mapFieldsetItem = (item, index) => {
+const mapFieldsetItem = (item: string | LayoutItemSpec, index: number): ReactElement | null => {
   if (isString(item)) {
     // simple field name as a string
     return <FieldSlot name={item} key={index} />;
@@ -22,7 +23,7 @@ const mapFieldsetItem = (item, index) => {
   }
 }
 
-export function Fieldset({index}) {
+export function Fieldset({ index }: {index: number}): JSX.Element | null {
   const {spec, rhf: {watch}} = useFormContext();
   const fieldset_spec = spec.fieldsets[index];
 
@@ -30,14 +31,14 @@ export function Fieldset({index}) {
   const [allowedByCL, setAllowedByCL] = useState(true);
 
   const CLGroups = fieldset_spec?.conditional_logic || [];
-  const hasCL = CLGroups.length;
+  const hasCL: boolean = !! CLGroups.length;
 
   useEffect(() => {
     if (! hasCL) return;
 
     const followedFields = collect_followed_fields(CLGroups);
 
-    let followedFieldsState = {};
+    let followedFieldsState: followedFieldsStateType = {};
     Object.keys(followedFields).forEach(item => {
       followedFieldsState[item] = watch(item);
     });
@@ -50,6 +51,8 @@ export function Fieldset({index}) {
 
   if (! allowedByCL) return null;
 
+  const elems: JSX.Element[] = fieldset_spec.fields.map(mapFieldsetItem).filter(value => !! value);
+
   // Render
   return (
     <FieldsetFull
@@ -57,12 +60,15 @@ export function Fieldset({index}) {
       desc={fieldset_spec.desc}
       css_classes={fieldset_spec?.css_classes}
     >
-      {fieldset_spec.fields.map(mapFieldsetItem)}
+      <>{elems}</>
     </FieldsetFull>
   );
 }
 
-export function FieldsetFull({title = '', desc = '', css_classes = [], children}) {
+export function FieldsetFull(
+    {title = '', desc = '', css_classes = [], children}:
+    {title?: string, desc?: string, css_classes?: string[], children: JSX.Element}
+): JSX.Element {
   return (
     <div className={classNames(['dfp-fieldset', ...css_classes])}>
       {title && <div className="dfp-fieldset__title ">{title}</div>}
@@ -72,7 +78,7 @@ export function FieldsetFull({title = '', desc = '', css_classes = [], children}
   );
 }
 
-export function FieldsetSimple({children}) {
+export function FieldsetSimple({ children }: {children: ReactElement}) {
   return (
     <div className="dfp-fieldset">{children}</div>
   );

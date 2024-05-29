@@ -1,12 +1,14 @@
-import React, { useContext } from "react";
+import React, { JSX, BaseSyntheticEvent, KeyboardEventHandler, MouseEventHandler } from "react";
 import classNames from "classnames";
 import { NumericFormat, PatternFormat } from 'react-number-format';
 
+import { FieldSpec, SharedRHF } from "../types";
 import { useFieldSpec } from "../inc/hooks";
-import { FormContext } from "../parts";
+import { useFormContext } from "../parts";
 import { ImageUpload } from "./field-file";
 
-export const fieldspec_to_input = (name, field_spec) => {
+
+export const fieldspec_to_input = (name: string, field_spec: FieldSpec): JSX.Element => {
   switch (field_spec.type) {
     case 'text':
       if (field_spec?.input_format) {
@@ -45,9 +47,9 @@ export const fieldspec_to_input = (name, field_spec) => {
   }
 };
 
-export function useFieldAttrs(name) {
+export function useFieldAttrs(name: string): [SharedRHF, RhfOptions, OtherAttrs] {
   const [field_spec, rhf] = useFieldSpec(name);
-  const { setFocusedField, rhf: { trigger } } = useContext(FormContext);
+  const { setFocusedField, rhf: { trigger } } = useFormContext();
   return [
     rhf,
     rhf_options(field_spec, setFocusedField, trigger),
@@ -55,18 +57,23 @@ export function useFieldAttrs(name) {
   ];
 }
 
+type RhfOptions = {
+  disabled: boolean;
+  value: any;
+  onBlur: Function;
+};
+
 /**
- *
  * @see https://react-hook-form.com/api/useform/register
  *
  * "disabled" input will result in an undefined form value.
  * If you want to prevent users from updating the input, you can use readOnly or disable the entire <fieldset />.
  */
-const rhf_options = (field_spec, setFocusedField, trigger) => {
-  const attrs = {
+const rhf_options = (field_spec: FieldSpec, setFocusedField: Function, trigger: Function): RhfOptions => {
+  const attrs: RhfOptions = {
     disabled: field_spec.disabled,
     value: field_spec.initial,
-    onBlur: () => { // rhf doesn't use onFocus: see: https://react-hook-form.com/api/useform/register
+    onBlur: (): void => { // rhf doesn't use onFocus: see: https://react-hook-form.com/api/useform/register
       console.log(`blur: ${field_spec.name}`);
       setFocusedField(null);
       trigger(field_spec.name);
@@ -75,8 +82,13 @@ const rhf_options = (field_spec, setFocusedField, trigger) => {
   return attrs;
 }
 
-const other_attrs = (field_spec, setFocusedField) => {
-  const attrs = {
+/**
+ * HTML attributes (name => value) of an input tag in a field component
+ */
+type OtherAttrs = Record<string, any>;
+
+const other_attrs = (field_spec: FieldSpec, setFocusedField: Function): OtherAttrs => {
+  const attrs: OtherAttrs = {
     ...field_spec.attrs,
     readOnly: field_spec.readonly,
     onFocus: () => {
@@ -85,7 +97,7 @@ const other_attrs = (field_spec, setFocusedField) => {
     },
   }
 
-  const attrs_map = {
+  const attrs_map: Record<string, string> = {
     class: 'className',
     minlength: 'minLength',
     maxlength: 'maxLength',
@@ -103,19 +115,25 @@ const other_attrs = (field_spec, setFocusedField) => {
   return attrs;
 }
 
-export function Label({text}) {
+export function Label({text}: {text: string}): JSX.Element {
   return <label htmlFor="">{text}</label>;
 }
 
-function InputText({name}) {
+function InputText({name}: {name: string}): JSX.Element {
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   return (
     <input type="text" {...rhf.register(name, rhf_options)} {...other_attrs} />
   );
 }
 
-function InputDate({name}) {
-  const rfn_props = {
+type RfnProps = {
+  format?: string;
+  mask?: string;
+  allowEmptyFormatting?: boolean;
+}
+
+function InputDate({name}: {name: string}): JSX.Element {
+  const rfn_props: RfnProps = {
     format: '##.##.####',
     mask: '_',
     allowEmptyFormatting: false,
@@ -123,7 +141,7 @@ function InputDate({name}) {
   return <MaskedInputText name={name} rfn_props={rfn_props} />
 }
 
-function MaskedInputText({name, rfn_props = {}}) {
+function MaskedInputText({name, rfn_props = {}}: {name: string, rfn_props?: RfnProps}): JSX.Element {
   const [field_spec, _] = useFieldSpec(name);
 
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
@@ -147,21 +165,36 @@ function MaskedInputText({name, rfn_props = {}}) {
   );
 }
 
-function MaskedInnerInput (props) {
+type ReactNumberFormatRelatedProps = {
+  rhf_props: any;
+  other_props: any;
+  onFocus: Function;
+  onBlur: Function;
+  onChange: Function;
+  onKeyDown: KeyboardEventHandler;
+  onMouseUp: MouseEventHandler;
+  name: string;
+  type: string;
+  value: any;
+};
+
+type MaskedInnerInputProps = ReactNumberFormatRelatedProps;
+
+function MaskedInnerInput (props: MaskedInnerInputProps): JSX.Element {
   const rhf_props = props.rhf_props;
   const other_props = props.other_props;
 
-  const onFocus = e => {
+  const onFocus = (e: BaseSyntheticEvent): void => {
     props.onFocus(e);
     other_props.onFocus(e);
   };
 
-  const onBlur = e => {
+  const onBlur = (e: BaseSyntheticEvent): void => {
     props.onBlur(e);
     rhf_props.onBlur(e);
   };
 
-  const onChange = e => {
+  const onChange = (e: BaseSyntheticEvent): void => {
     props.onChange(e);
     rhf_props.onChange(e);
   };
@@ -190,7 +223,7 @@ function MaskedInnerInput (props) {
  * TODO allow changing props of NumericFormat on Django side
  * @link https://s-yadav.github.io/react-number-format/docs/numeric_format
  */
-function InputPositiveNumber({name}) {
+function InputPositiveNumber({name}: {name: string}) {
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   const rhf_props = rhf.register(name, rhf_options);
 
@@ -210,7 +243,9 @@ function InputPositiveNumber({name}) {
   );
 }
 
-function NumericInnerInput (props) {
+type NumericInnerInputProps = ReactNumberFormatRelatedProps;
+
+function NumericInnerInput (props: NumericInnerInputProps): JSX.Element {
   const rhf_props = props.rhf_props;
   const other_props = props.other_props;
   
@@ -220,17 +255,17 @@ function NumericInnerInput (props) {
   //   }
   // };
 
-  const onFocus = e => {
+  const onFocus = (e: BaseSyntheticEvent): void => {
     props.onFocus(e);
     other_props.onFocus(e);
   };
 
-  const onBlur = e => {
+  const onBlur = (e: BaseSyntheticEvent): void => {
     props.onBlur(e);
     rhf_props.onBlur(e);
   };
 
-  const onChange = e => {
+  const onChange = (e: BaseSyntheticEvent): void => {
     // setDefaultValue(e, '0');
     props.onChange(e);
     rhf_props.onChange(e);
@@ -258,10 +293,10 @@ function NumericInnerInput (props) {
   );
 }
 
-function InputSlug({name}) {
+function InputSlug({name}: {name: string}): JSX.Element {
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   const [field_spec, _] = useFieldSpec(name);
-  const applySuggestion = (e, value) => {
+  const applySuggestion = (e: BaseSyntheticEvent, value: string): void => {
     e.preventDefault();
     console.log(value);
     rhf.setValue(name, value, { shouldValidate: true })
@@ -284,7 +319,7 @@ function InputSlug({name}) {
                 <div className="dfp-suggestions__item" key={index}>
                   <a href="#"
                      className="dfp-suggestions__item-link"
-                     onClick={(e) => applySuggestion(e, item)}
+                     onClick={(e: BaseSyntheticEvent) => applySuggestion(e, item)}
                   >{item}</a>
                 </div>
               );
@@ -297,35 +332,35 @@ function InputSlug({name}) {
   )
 }
 
-function InputURL({name}) {
+function InputURL({name}: {name: string}): JSX.Element {
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   return (
     <input type="url" {...rhf.register(name, rhf_options)} {...other_attrs} />
   );
 }
 
-function InputNumber({name}) {
+function InputNumber({name}: {name: string}): JSX.Element {
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   return (
     <input type="number" {...rhf.register(name, rhf_options)} {...other_attrs} />
   )
 }
 
-function InputEmail({name}) {
+function InputEmail({name}: {name: string}): JSX.Element {
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   return (
     <input type="email" {...rhf.register(name, rhf_options)} {...other_attrs} />
   )
 }
 
-export function InputHidden({name}) {
+export function InputHidden({name}: {name: string}): JSX.Element {
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   return (
     <input type="hidden" {...rhf.register(name, rhf_options)} {...other_attrs} />
   )
 }
 
-function Textarea({name}) {
+function Textarea({name}: {name: string}): JSX.Element {
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   const rhf_attrs = rhf.register(name, rhf_options);
   return (
@@ -333,7 +368,7 @@ function Textarea({name}) {
   );
 }
 
-function InputCheckbox({name}) {
+function InputCheckbox({name}: {name: string}): JSX.Element {
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   const [field_spec, _] = useFieldSpec(name);
   return (
@@ -344,8 +379,8 @@ function InputCheckbox({name}) {
   )
 }
 
-function RadioSelect({name}) {
-  const {spec} = useContext(FormContext);
+function RadioSelect({name}: {name: string}): JSX.Element {
+  const {spec} = useFormContext();
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   const [field_spec, _] = useFieldSpec(name);
   return (
@@ -372,7 +407,7 @@ function RadioSelect({name}) {
   );
 }
 
-function Select({name}) {
+function Select({name}: {name: string}): JSX.Element {
   const [rhf, rhf_options, other_attrs] = useFieldAttrs(name);
   const [field_spec, _] = useFieldSpec(name);
   return (
@@ -385,11 +420,11 @@ function Select({name}) {
 }
 
 
-export function Submit({button_text}) {
-  const { loading } = useContext(FormContext);
+export function Submit({button_text}: {button_text: string}): JSX.Element {
+  const { loading } = useFormContext();
   const css_classes = classNames('dfp-submit-button', {'dfp-submit-button--loading': loading});
 
-  const onClick = (e) => {
+  const onClick = (e: BaseSyntheticEvent): void => {
     if (loading) {
       e.preventDefault();
     }
@@ -399,13 +434,13 @@ export function Submit({button_text}) {
   );
 }
 
-export function SubmitIndicator() {
+export function SubmitIndicator(): JSX.Element {
   return (
     <div className="dpf-submit-indicator" />
   );
 }
 
-export function Separator() {
+export function Separator(): JSX.Element {
   return (
     <div className="dfp-separator" />
   );
