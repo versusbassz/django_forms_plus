@@ -60,7 +60,7 @@ FormResponseAction(
 See `js-api.md` to read how to handle `dfp:custom_action` action.
 
 
-## How to use Response Actoions in Model Views
+## How to use Response Actions in Model Views
 
 ```python
 from django.views.generic import DetailView

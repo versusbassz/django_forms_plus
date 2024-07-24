@@ -222,6 +222,8 @@ def get_form_spec(form: DjangoForm) -> FormState:
                 # TODO widget.attrs['checked'] (bool) ??? but initial is enough basically
             case 'HiddenInput':
                 field_spec['type'] = 'hidden'
+                field_spec['label'] = ''
+                default_initial = ''
             case 'Select':
                 field_spec['type'] = 'select'
                 field_spec['choices'] = widget.choices
@@ -286,9 +288,9 @@ def get_form_spec(form: DjangoForm) -> FormState:
 
 
 def _get_fieldsets_spec(meta: Helper, fields_spec: FieldSpecsDict) -> FieldsetSpecList:
-    fieldsets: FieldsetSpecList
+    fieldsets: FieldsetSpecList = []
+
     if hasattr(meta, 'fieldsets') and len(meta.fieldsets):
-        fieldsets = []
         for fieldset_spec in meta.fieldsets:
             fieldset: FieldsetSpec = {}
             if 'title' in fieldset_spec:
@@ -302,11 +304,20 @@ def _get_fieldsets_spec(meta: Helper, fields_spec: FieldSpecsDict) -> FieldsetSp
             )
             fieldsets.append(fieldset)
     else:
-        fieldsets = [
-            {
-                'fields': [field for index, field in enumerate(fields_spec)]
-            },
-        ]
+        fields: list[str] = []
+        for field_name in fields_spec:
+            field = fields_spec[field_name]
+
+            # filter hidden fields
+            if field['type'] == 'hidden':
+                continue
+            fields.append(field_name)
+
+        # a form can have hidden fields only
+        # so check that we have visible fields in a form to create a minimal fieldset
+        if len(fields):
+            minimal_fieldset_spec: FieldsetSpec = {'fields': fields}
+            fieldsets.append(minimal_fieldset_spec)
     return fieldsets
 
 
