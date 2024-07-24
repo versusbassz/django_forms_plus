@@ -3,6 +3,12 @@ Sections: Spec, Features, Backend, Frontend
 
 # The changelog
 
+
+## 0.14.1 - 2024.07.24
+
+fix: Fix some issues for HiddenInput fields
+maintenance: Update some NPM-dependecies
+
 ## 0.14.0 - 2024.05.27
 
 new, js: Add DfpFormContext.rhf.getValues
