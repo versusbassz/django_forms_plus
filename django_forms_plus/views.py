@@ -34,7 +34,7 @@ def get_form_layout_raw(form_state: FormState,
 
 <div class="js-dj-form-wrapper dfp-form-container">
     <div style="display: none !important;">
-        <script class="js-dj-form__data" type="type="application/json">{_form_state}</script>
+        <script class="js-dj-form__data" type="application/json">{_form_state}</script>
         <script class="js-csrf-token" type="text/plain">{_csrf_token}</script>
         <script src="{js_script_url}" async></script>
     </div>
